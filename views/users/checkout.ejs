@@ -138,17 +138,17 @@
 
     <section class="checkout_area">
       <div class="container">
-        <div class="returning_customer">
-          <p>
+                  <p>
             If you have shopped with us before, please enter your details in the
             boxes below. If you are a new customer, please proceed to the
             Billing & Shipping section.
           </p>
 
-          <form class="row contact_form" action="adress" method="post" novalidate="novalidate">
-            <div class="billing_details">
+          <div class="billing_details">
               <div class="row">
                 <div class="col-lg-8">
+                  <form class="row contact_form" action="adress" method="post" novalidate="novalidate">
+            
                   <h3>Billing Details</h3>
 
                   <div class="col-md-6 form-group p_star">
@@ -188,26 +188,47 @@
                   </div>
                   <textarea class="form-control" name="message" id="message" rows="1"
                     placeholder="Order Notes"></textarea>
+                    <button class="btn w-100" type="submit"> new adress</button>
+                  </form>
                 </div>
-
-              </div>
-            </div>
-            <button class="btn w-100" type="submit"> new adress</button>
-          </form>
-        </div>
-
-      </div>
-
-      </div>
-      </div>
-    </section>
-
-    <section class="checkout_area">
-
-      <form onsubmit="deleveryBtn(event)" id="formdetails">
-        <div class="order_box">
-          <div class="resp ">
+                
+               
+        <div class="col-lg-4">
+          <div class="order_box">
+          <form onsubmit="deleveryBtn(event)" id="formdetails">
             <div class="">
+            <% userCart.Adress.forEach((x)=> { %>
+              <p>
+                <%= x.phoneNumber %>
+              </p>
+              <p>
+                <%= x.country %>
+              </p>
+              <p>
+                <%= x.pincode %>
+              </p>
+              <p>
+                <%= x.homeAdress %>
+              </p>
+              <p>
+                <%= x.townName %>
+              </p>
+              <p>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="address" id="address<%= x._id %>"
+                  value="<%= x._id %>">
+                <label class="form-check-label" for="address<%= x._id %>">
+                  Select Address
+                </label>
+              </div>
+              </p>
+              <p>
+                <a href="deleteAddress?q=<%= x._id %>" class="btn btn-danger">Delete Address</a>
+              </p>
+
+              <% }) %>
+          </div>
+        
               <h2>Your Order</h2>
               <ul class="list">
                 <% userCart.cart.forEach((x)=>{%>
@@ -234,51 +255,22 @@
                     </ul>
               </ul>
               <div class="payment_item active">
-
+    
                 <input type="radio" id="payment" name="paymentOption" value="COD" />
-                <label for="payment">CASH ON DELEVERY </label>
+                <label for="payment">COD </label>
 
                 <input type="radio" id="payment" name="paymentOption" value="ONLINE" />
-                <label for="payment">Online payment </label>
+                <label for="payment">ONLINE </label>
               </div>
+          
+            
               <button class="btn w-100" type="submit"> Proceed to DELEVERY</button>
-            </div>
-            <div class="">
-              <% userCart.Adress.forEach((x)=> { %>
-                <p>
-                  <%= x.phoneNumber %>
-                </p>
-                <p>
-                  <%= x.country %>
-                </p>
-                <p>
-                  <%= x.pincode %>
-                </p>
-                <p>
-                  <%= x.homeAdress %>
-                </p>
-                <p>
-                  <%= x.townName %>
-                </p>
-                <p>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="address" id="address<%= x._id %>"
-                    value="<%= x._id %>">
-                  <label class="form-check-label" for="address<%= x._id %>">
-                    Select Address
-                  </label>
-                </div>
-                </p>
-                <p>
-                  <a href="deleteAddress?q=<%= x._id %>" class="btn btn-danger">Delete Address</a>
-                </p>
-
-                <% }) %>
-            </div>
-
-          </div>
-        </div>
-      </form>
+            </form>
+       </div>   
+       </div>
+       </div>
+       </div>     
+      </div>
     </section>
   </main>
   <footer>

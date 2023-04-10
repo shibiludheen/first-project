@@ -13,7 +13,7 @@ const { response } = require("express");
 let otp1 = undefined;
 var instance = new Razorpay({
   key_id: "rzp_test_8emA6zzli6nGP1",
-  key_secret: "O4RlOXRxnLAX8IaXM3ifqFZZ",
+  key_secret: "O4RlOXRxnLAX8IaXM3ifqFZZ", 
 });
 module.exports = {
   adding: async (req, res) => {
@@ -85,8 +85,10 @@ module.exports = {
         req.session.loggedin = true;
 
         req.session.email = users.email;
+        let product = await product1.find()
 
-        res.render("users/index", { categorie, userCart ,subcategory});
+        res.render("users/index", { categorie, userCart ,subcategory , product});
+       
       } else {
         const error = "You have enterd the wrong password or email";
         res.render("users/login", { error });
@@ -158,9 +160,10 @@ module.exports = {
     });
 
     if (req.session.loggedin) {
-      res.render("users/index", { categorie, userCart , subcategory });
+      let product = await product1.find()
+      res.render("users/index", { categorie, userCart , subcategory,product });
     } else {
-      res.render("users/login");
+      res.render("users/login");                  
     }
   },
   quantityPlus: async (req, res) => {
