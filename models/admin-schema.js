@@ -11,8 +11,6 @@ const admin = mongoose.Schema({
     unique:true,
     require:true
  }
-
-
 })
  const adminDatabase = mongoose.model("adminDatabase",admin)
  module.exports = adminDatabase

@@ -31,9 +31,7 @@ let Router =  express.Router()
 //  Router.get('/typography.html',(req,res)=>{
 //    res.render('admin/typography')
 //  })
- Router.get('/index.html',(req,res)=>{
-   res.render('admin/index')
- })
+ Router.get('/index.html',controller.dashboard)
  Router.get('/Adminlogout',(req,res)=>{
     req.session.adminloggedin = false
     res.redirect('/admin')

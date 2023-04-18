@@ -261,6 +261,8 @@
 
                 <input type="radio" id="payment" name="paymentOption" value="ONLINE" />
                 <label for="payment">ONLINE </label>
+                <input type="checkbox"  name="Wallet" value="useWallet" />
+                <label for="payment">Wallet </label>
               </div>
           
             
@@ -449,14 +451,21 @@
 
       let Adress = detail.get('Adress')
       let paymentOption = detail.get('paymentOption')
+      let wallet  = detail.get('Wallet')
 
 
-      const response = await fetch(`/order?Adress=${Adress}&paymentOption=${paymentOption}`, { method: "POST" })
+      const response = await fetch(`/order?Adress=${Adress}&paymentOption=${paymentOption}&wallet=${wallet}`, { method: "POST" })
       const result = await response.json()
-      if (result.methode == 'online') {
-        console.log(response)
-        razorpay(result.order)
+      if(result.allAmountWallet){
+          window.location.href="login.html?q=paid"
       }
+      if (result.methode == 'online') {
+      
+       razorpay(result.order)
+        
+
+      }
+    
       function razorpay(order) {
         var options = {
           "key": "rzp_test_8emA6zzli6nGP1", // Enter the Key ID generated from the Dashboard

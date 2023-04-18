@@ -6,6 +6,7 @@ const orderSchema = require('../models/order-schema')
 const userSchema = require("../models/user-schema");
 const productSchema = require("../models/product-schema");
 const subcategory = require("../models/subcategorie-schema");
+
 module.exports = {
   checker: async (req, res) => {
     try{
@@ -16,7 +17,14 @@ module.exports = {
 
     if (admin.email == Email && admin.password == Password) {
       req.session.adminloggedin = true
-      res.render("admin/index")
+   const  totelAmount = await orderSchema.aggregate([
+      {$match:{delivery:'delivered'}},
+      {$group:{_id:null,totel:{$sum:'$totelAmount'}}}
+   ])
+  
+   
+     
+   res.render("admin/index",{totelAmount})
     } else {
       res.render("admin/signin", { err })
     }
@@ -24,6 +32,18 @@ module.exports = {
     const err = "your password or email is wrong"
     res.render('admin/signin',{err})
   }
+  },dashboard:async(req,res)=>{
+  try{
+    const  totelAmount = await orderSchema.aggregate([
+      {$match:{delivery:'delivered'}},
+      {$group:{_id:null,totel:{$sum:'$totelAmount'}}}
+   ]) 
+   console.log(totelAmount)
+    res.render('admin/index',{totelAmount})
+  }catch{
+    res.redirect('/')
+  }
+
   },
   productAdding: async (req, res) => {
     try {

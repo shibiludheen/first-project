@@ -260,22 +260,59 @@ module.exports = {
         path: "cart.product",
         model: "prodect",
       });
-      const totelAmount = userCart.cart.reduce((acc, curr) => {
+      let totelAmount = userCart.cart.reduce((acc, curr) => {
+        acc = curr.quantity * curr.product.price + acc;
+        return acc;
+      }, 0);
+      let actualPrice= userCart.cart.reduce((acc, curr) => {
         acc = curr.quantity * curr.product.price + acc;
         return acc;
       }, 0);
       const paymentOption = req.query.paymentOption;
       const billingAdress = req.query.Adress;
+      const wallet  = req.query.wallet
       const user = userCart._id;
       const date = Date.now();
+      if(wallet=='useWallet'){
+        const userEmail = req.session.email
+         let userCart = await Schema.findOne({ email: userEmail }).populate({
+           path: "cart.product",
+           model: "prodect",
+         })
+         
+ 
+        let  wallet = userCart.wallet
+        let takeWallet =undefined
+          if(wallet>=actualPrice){
+          
+           wallet-actualPrice
+           takeWallet = actualPrice
+           userCart.takeWallet=takeWallet
+           actualPrice = 0
+         }else if(wallet<actualPrice&&wallet>0){
+           takeWallet = wallet
+           userCart.takeWallet = takeWallet
+           actualPrice = actualPrice-wallet
+        }
+       if(userCart.takeWallet){
+        const userEmail = req.session.email
+         await Schema.findOneAndUpdate({email:userEmail},{$inc:{wallet:-(userCart.takeWallet)}})
+       }
+       }
+       if(paymentOption=="COD"||paymentOption=="ONLINE"){
       const newOrder = await orderSchema.create({
         paymentOption,
         billingAdress,
         date,
         user,
         totelAmount,
-      });
+      })
+      if(actualPrice==0){
+        const userEmail = req.session.email
+        await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
+         res.json({allAmountWallet:true})
 
+      }else{
       if (paymentOption == "ONLINE") {
         var options = {
           amount: totelAmount,
@@ -288,7 +325,14 @@ module.exports = {
           res.json({ methode: "online", order: order });
         });
       } else {
+        userEmail:req.session.email
+        await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
+      
       }
+    }
+    }
+     
+
     } catch (err) {
       res.redirect("back");
     }
@@ -319,7 +363,7 @@ module.exports = {
       const user  =  order.user._id
       console.log(user)
       const amount = order.totelAmount
-      if(order.status=="paid"){    
+      if(order.status=="paid"){ 
      await Schema.findOneAndUpdate({_id:user},{$inc:{wallet:amount}}) 
       }    
     const orderdetail = await orderSchema.findOneAndDelete({ _id: orderid });
