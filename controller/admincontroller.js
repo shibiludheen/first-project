@@ -22,6 +22,7 @@ module.exports = {
       {$group:{_id:null,totel:{$sum:'$totelAmount'}}}
    ])
   
+   console.log("this is totel amount "+totelAmount)
    
      
    res.render("admin/index",{totelAmount})
@@ -38,7 +39,7 @@ module.exports = {
       {$match:{delivery:'delivered'}},
       {$group:{_id:null,totel:{$sum:'$totelAmount'}}}
    ]) 
-   console.log(totelAmount)
+   console.log("this is totel amount"+totelAmount)
     res.render('admin/index',{totelAmount})
   }catch{
     res.redirect('/')
