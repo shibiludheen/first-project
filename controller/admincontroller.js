@@ -35,7 +35,7 @@ module.exports = {
   
    const totalOrders = await orderSchema.aggregate([{$group:{_id:{$year:"$date"},totalOrders:{$sum:1}}},{$sort:{"_id":1}}])
    const totalOrdersCount = totalOrders.map((ele)=>ele.totalOrders)
-    res.render('admin/index',{totalAmount,totelSale,totelUser,order,labels:JSON.stringify(labels),data:JSON.stringify(data),totalOrders:JSON.stringify(totalOrdersCount)})
+    res.render('admin/index',{totalAmount,totelSale:totelSale,totelUser,order,labels:JSON.stringify(labels),data:JSON.stringify(data),totalOrders:JSON.stringify(totalOrdersCount)})
     } else {
       res.render("admin/signin", { err })
     }
