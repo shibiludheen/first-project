@@ -47,10 +47,4 @@ router.get('/deleteAdress',controller.adressDelete)
 router.post('/search',controller.searching)
 router.post('/categorychange',controller.categoryChange)
 router.get('/returnOrder', controller.orderReturn)
-
-
-
-
-
-
 module.exports = router

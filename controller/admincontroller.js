@@ -6,6 +6,10 @@ const orderSchema = require('../models/order-schema')
 const userSchema = require("../models/user-schema");
 const productSchema = require("../models/product-schema");
 const subcategory = require("../models/subcategorie-schema");
+const Excel = require('exceljs')
+const PDFDocument = require('pdfkit-table')
+const order = require("../models/order-schema");
+const { Console } = require("console");
 
 module.exports = {
   checker: async (req, res) => {
@@ -17,15 +21,21 @@ module.exports = {
 
     if (admin.email == Email && admin.password == Password) {
       req.session.adminloggedin = true
-   const  totelAmount = await orderSchema.aggregate([
+   let totalAmount = await orderSchema.aggregate([
       {$match:{delivery:'delivered'}},
       {$group:{_id:null,totel:{$sum:'$totelAmount'}}}
    ])
-  
-   console.log("this is totel amount "+totelAmount)
    
-     
-   res.render("admin/index",{totelAmount})
+    
+   const totelSale = await orderSchema.count()
+   const totelUser = await userSchema.count()
+  const totalSale2 = await orderSchema.aggregate([{$group:{_id:{$year:"$date"},totalSales:{$sum:"$totelAmount"}}},{$sort:{"_id":1}}])
+   const labels = totalSale2.map((ele)=>ele._id);
+   const data = totalSale2.map((ele)=>ele.totalSales)
+  
+   const totalOrders = await orderSchema.aggregate([{$group:{_id:{$year:"$date"},totalOrders:{$sum:1}}},{$sort:{"_id":1}}])
+   const totalOrdersCount = totalOrders.map((ele)=>ele.totalOrders)
+    res.render('admin/index',{totalAmount,totelSale,totelUser,order,labels:JSON.stringify(labels),data:JSON.stringify(data),totalOrders:JSON.stringify(totalOrdersCount)})
     } else {
       res.render("admin/signin", { err })
     }
@@ -35,14 +45,30 @@ module.exports = {
   }
   },dashboard:async(req,res)=>{
   try{
-    const  totelAmount = await orderSchema.aggregate([
+    const  totalAmount = await orderSchema.aggregate([
       {$match:{delivery:'delivered'}},
       {$group:{_id:null,totel:{$sum:'$totelAmount'}}}
    ]) 
-   console.log("this is totel amount"+totelAmount)
-    res.render('admin/index',{totelAmount})
-  }catch{
-    res.redirect('/')
+
+   const totelSale = await orderSchema.count()
+   const totelUser = await userSchema.count()
+   const order = await orderSchema.find()
+   const year1 = order.map((element)=>{
+      return element.date.getFullYear()
+   })
+   const uniqueData = [...new Set(year1)];
+   console.log(uniqueData)
+  const year2 = JSON.stringify(uniqueData)
+
+  const totalSale2 = await orderSchema.aggregate([{$group:{_id:{$year:"$date"},totalSales:{$sum:"$totelAmount"}}},{$sort:{"_id":1}}])
+   const labels = totalSale2.map((ele)=>ele._id);
+   const data = totalSale2.map((ele)=>ele.totalSales)
+  
+   const totalOrders = await orderSchema.aggregate([{$group:{_id:{$year:"$date"},totalOrders:{$sum:1}}},{$sort:{"_id":1}}])
+   const totalOrdersCount = totalOrders.map((ele)=>ele.totalOrders)
+    res.render('admin/index',{totalAmount,totelSale,totelUser,order,labels:JSON.stringify(labels),data:JSON.stringify(data),totalOrders:JSON.stringify(totalOrdersCount)})
+  }catch(err){
+    res.send(err)
   }
 
   },
@@ -206,6 +232,66 @@ module.exports = {
       res.send(err)
      }
 
-  }
+  },getSales:async(req,res)=>{
+    try{
+
+    let{fromDate,toDate,file}=req.body
+    fromDate=new Date(fromDate).setHours(00,00,00)
+    toDate=new Date(toDate).setHours(23,59,59)
+    let orders=await orderSchema.find({date: {
+        $gte: fromDate,
+        $lte: toDate,
+      }}).populate('products.product');
+   if(file=='excel'){
+    const workbook = new Excel.Workbook();
+    const worksheet = workbook.addWorksheet('SalesReport');
+    worksheet.addRow(['Order id', 'billingAdress', 'Total','payment methode','date','order status','payment status']);
+    orders.forEach(order => {
+        worksheet.addRow([order._id, order.billingAdress, order.totelAmount,order.paymentOption,order.date.toLocaleDateString(),order.orderStatus,order.paymentStatus]);
+      });
+
+    
+    worksheet.columns.forEach(column => {
+        column.width = 30;
+      });
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=SalesReport.xlsx');
+      return workbook.xlsx.write(res);
+   }
+   if(file=='pdf'){
+    let doc = new PDFDocument({ margin: 30, size:[1000,1000] });
+
+let details=[]
+orders.forEach(order => {
+details.push([order._id, order.billingAdress, order.totelAmount,order.paymentOption,order.date.toLocaleDateString(),order.delivery,order.status]);
+})
+
+const title='sales report'
+const headers = ['Order id', 'billingAdress', 'Total','payment methode','date','order status','payment status'];
+const rows = details
+
+doc.table({title,headers,rows},{
+
+columnsSize: [ 200, 200, 100,100,100,100,100 ],
+
+})
+
+
+res.setHeader('Content-disposition', 'attachment; filename=salesReport.pdf');
+res.setHeader('Content-type', 'application/pdf');
+doc.pipe(res);
+doc.end();
+
+   }
+
+    }
+    catch(err){
+        res.send(err);
+    }
+
+   
+    
+}
 
 };

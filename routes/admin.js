@@ -51,5 +51,6 @@ let Router =  express.Router()
  Router.post('/subcategorieDelete',controller.subCategoryDelete)
  Router.get('/orderDelete',controller.orderDetailView)
  Router.post('/changeOrderStatus',controller.orderDeliveryStatus)
+ router.post('/dowloadSalesReport',controller.getSales)
  
   module.exports = Router 
