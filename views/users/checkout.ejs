@@ -241,9 +241,12 @@
               <ul class="list">
                 <% userCart.cart.forEach((x)=>{%>
                   <li>
-                    <a href="#">
-                      <%=x.product.productName%>
-                        <span class="middle">
+                    <a href="#"style="display:flex">
+                      <span class="first" style="padding: 0px 2px;">
+                        <%=x.product.productName%>
+                        </span>
+                      
+                        <span class="middle" style="padding: 0px 5px;">
                           <%=x.quantity%>
                         </span>
                         <span class="last">₹<%=x.product.price*x.quantity%></span>
@@ -255,9 +258,11 @@
                         <a href="#">Total  ₹<span id="totelprice"> <%=subTotal %></span></a>
                       </li>
                       <li>
+                        <a href="#">Discount Applied : <span id="discount-applied">₹ 0</span>
+                        </a>
                       </li> 
                       <li>
-                        <a href="#">Sub Total<span>₹</span>
+                        <a href="#">Sub Total<span id="sub-total-amount">₹ <%=subTotal %></span>
                         </a>
                       </li>
                     </ul>
@@ -478,7 +483,7 @@
       function razorpay(order) {
         var options = {
           "key": "rzp_test_8emA6zzli6nGP1", // Enter the Key ID generated from the Dashboard
-          "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+          "amount": order.amount*100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
           "currency": "INR",
           "name": "on-step",
           "description": "Test Transaction",
@@ -537,6 +542,7 @@
         
         let totel = document.getElementById('totelprice').innerHTML
         console.log(totel)
+        
         let old = parseFloat(totel)
         let discount = parseFloat(old)*parseFloat(data.discount/100)
         let changed
@@ -546,7 +552,9 @@
             changed = old-(parseFloat(data.maxAmount))
           }
           console.log(changed)
-          document.getElementById('totelprice').innerHTML = `${totel}- (discounted price =  ${parseInt(discount)})= ${totel - discount }`
+          document.getElementById('discount-applied').innerHTML = `₹ ${parseInt(discount)}`
+          document.getElementById('sub-total-amount').innerHTML = `₹  ${totel - discount }`
+          // document.getElementById('totelprice').innerHTML = `${totel}- (discounted price =  ${parseInt(discount)})= ${totel - discount }`
           document.getElementById('couponValidate').innerHTML='coupon applied'
 
           }

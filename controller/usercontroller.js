@@ -347,7 +347,7 @@ couponid=undefined
       }else{
       if (paymentOption == "ONLINE") {
         var options = {
-          amount: totelAmount,
+          amount: totelAmount*100,
           currency: "INR",
           receipt: "" + newOrder._id,
         };
