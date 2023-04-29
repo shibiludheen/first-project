@@ -146,6 +146,7 @@
 
           <div class="cupon_area">
             <div id="couponErr" style="color: red;"></div>
+            <div id="couponValidate" style="color: green;"></div>
   <form  onsubmit="validator(event)" method="post">
 <input type="text" name="coupenCode" id="coupon" placeholder="Enter coupon code" />
 <button type="submit" class="btn">Apply Coupon</button>
@@ -545,7 +546,8 @@
             changed = old-(parseFloat(data.maxAmount))
           }
           console.log(changed)
-          document.getElementById('totelprice').innerHTML = `${totel}-${discount}= ${totel - discount }`
+          document.getElementById('totelprice').innerHTML = `${totel}- (discounted price =  ${parseInt(discount)})= ${totel - discount }`
+          document.getElementById('couponValidate').innerHTML='coupon applied'
 
           }
         }
