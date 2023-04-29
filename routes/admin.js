@@ -52,5 +52,10 @@ let Router =  express.Router()
  Router.get('/orderDelete',controller.orderDetailView)
  Router.post('/changeOrderStatus',controller.orderDeliveryStatus)
  router.post('/dowloadSalesReport',controller.getSales)
+ router.get('/addCoupen',controller.Coupen)
+ router.post('/addCoupen',controller.AddCoupen)
+ router.post('/isActiveFalse',controller.isActiveFalse)
+ router.post('/isActiveTrue',controller.isActiveTrue)
+ router.post('/deleteCoupen',controller.deleteCoupen)
  
   module.exports = Router 

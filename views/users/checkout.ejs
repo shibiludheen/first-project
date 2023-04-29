@@ -144,6 +144,13 @@
             Billing & Shipping section.
           </p>
 
+          <div class="cupon_area">
+            <div id="couponErr" style="color: red;"></div>
+  <form  onsubmit="validator(event)" method="post">
+<input type="text" name="coupenCode" id="coupon" placeholder="Enter coupon code" />
+<button type="submit" class="btn">Apply Coupon</button>
+</form>
+</div>
           <div class="billing_details">
               <div class="row">
                 <div class="col-lg-8">
@@ -244,10 +251,10 @@
                   <%})%>
                     <ul class="list list_2">
                       <li>
-                        <a href="#">Total <span>₹ <%=subTotal %></span></a>
+                        <a href="#">Total  ₹<span id="totelprice"> <%=subTotal %></span></a>
                       </li>
                       <li>
-                      </li>
+                      </li> 
                       <li>
                         <a href="#">Sub Total<span>₹</span>
                         </a>
@@ -452,9 +459,10 @@
       let Adress = detail.get('Adress')
       let paymentOption = detail.get('paymentOption')
       let wallet  = detail.get('Wallet')
+      let coupenid = document.getElementById('coupon').value
 
 
-      const response = await fetch(`/order?Adress=${Adress}&paymentOption=${paymentOption}&wallet=${wallet}`, { method: "POST" })
+      const response = await fetch(`/order?Adress=${Adress}&paymentOption=${paymentOption}&wallet=${wallet}&coupenid=${coupenid}`, { method: "POST" })
       const result = await response.json()
       if(result.allAmountWallet){
           window.location.href="login.html?q=paid"
@@ -510,6 +518,41 @@
 
     }
   </script>
+  <script>
+    async function validator(event){
+   
+      event.preventDefault()
+      const couponId =document.getElementById('coupon').value
+     
+      let res = await fetch(`applyCoupen?id=${couponId}`,{method:'post'})
+ 
+
+      let data = await res.json()
+      console.log(data)
+      if(data.err){
+        document.getElementById('couponErr').innerHTML=data.err
+      }
+      if(data.validated){
+        
+        let totel = document.getElementById('totelprice').innerHTML
+        console.log(totel)
+        let old = parseFloat(totel)
+        let discount = parseFloat(old)*parseFloat(data.discount/100)
+        let changed
+        if(discount<parseFloat(data.maxAmount)){
+          changed = old-discount}
+          else{
+            changed = old-(parseFloat(data.maxAmount))
+          }
+          console.log(changed)
+          document.getElementById('totelprice').innerHTML = `${totel}-${discount}= ${totel - discount }`
+
+          }
+        }
+      
+
+    
+    </script>
   <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vaafb692b2aea4879b33c060e79fe94621666317369993"
     integrity="sha512-0ahDYl866UMhKuYcW078ScMalXqtFJggm7TmlUtp0UlD4eQk0Ixfnm5ykXKvGJNFjLMoortdseTfsRT8oCfgGA=="
     data-cf-beacon='{"rayId":"78ff30f38f9485c5","token":"cd0b4b3a733644fc843ef0b185f98241","version":"2022.11.3","si":100}'

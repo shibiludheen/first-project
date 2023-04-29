@@ -6,6 +6,7 @@ const orderSchema = require('../models/order-schema')
 const userSchema = require("../models/user-schema");
 const productSchema = require("../models/product-schema");
 const subcategory = require("../models/subcategorie-schema");
+const coupenSchema = require('../models/coupen')
 const Excel = require('exceljs')
 const PDFDocument = require('pdfkit-table')
 const order = require("../models/order-schema");
@@ -292,6 +293,58 @@ doc.end();
 
    
     
+},
+Coupen:async(req,res)=>{
+ try{
+   const coupen  = await coupenSchema.find() 
+  res.render('admin/coupen',{coupen})
+
+ }catch(err){
+  res.send(err)
+
+ }
+},
+AddCoupen:async(req,res)=>{
+  try{
+   const {code,discount,minOrderAmount,maxDiscountAmount,usersAllowed,expiresAt,isActive} = req.body
+   await coupenSchema.create({code,discount,minOrderAmount,maxDiscountAmount,usersAllowed,expiresAt,isActive})
+  res.redirect('back')
+  }catch(err){
+    res.send(err)
+
+  }
+},
+isActiveFalse:async(req,res)=>{
+  try{
+    const id =req.query.q 
+    await coupenSchema.findOneAndUpdate({_id:id},{$set:{isActive:false}})
+    res.redirect('back')
+  }catch(err){
+    res.redirect('back')
+
+  }
+
+},
+isActiveTrue:async(req,res)=>{
+  try{
+  const id =req.query.q 
+    await coupenSchema.findOneAndUpdate({_id:id},{$set:{isActive:true}})
+    res.redirect('back')
+  }catch(err){
+    res.redirect('back')
+
+  }
+
+},deleteCoupen:async(req,res)=>{
+ try{
+   const id = req.query.q
+   await coupenSchema.findOneAndDelete({_id:id})
+   res.redirect('back')
+ }catch(err){
+  res.redirect('back')
+
+ }
 }
+
 
 };

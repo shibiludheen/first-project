@@ -69,12 +69,12 @@
                         </div> -->
                     </div>
                      <!-- <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a> -->
-                     <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Addproduct</a>
-                    <a href="categoriesadding" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>categories Add</a>
+                    <a href="form.html" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>Addproduct</a>
+                    <a href="categoriesadding" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>categoryAdding</a>
                     <a href="subcategoriesadding" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>Subcategoriesadd</a>
-                    <a href="users" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Users</a>
-                    <a href="productController" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>product manage</a>
-                    <a href="addCoupen" class="nav-item nav-link  "><i class="fa fa-keyboard me-2"></i>Coupen add</a>
+                    <a href="users" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>Users</a>
+                    <a href="productController" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>productController</a>
+                    <a href="addCoupen" class="nav-item nav-link  active"><i class="fa fa-keyboard me-2"></i>Coupen add</a>
                     <a href="orderDelete" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>order detail</a>
                     <!-- <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a> -->
                     <!-- <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a> --> 
@@ -215,6 +215,7 @@
                     </div> -->
                     <!-- <div class="col-sm-12 col-xl-6">
                         <div class="bg-secondary rounded h-100 p-4">
+                            
                             <h6 class="mb-4">Horizontal Form</h6>
                             <form>
                                 <div class="row mb-3">
@@ -263,109 +264,97 @@
                             </form>
                         </div>
                     </div> -->
-                    <form action="categoryAdding" method="post" >
+                    
                     <div class="col-sm-12 col-xl-6">
+                        <form action="addCoupen" method="post" >
                         <div class="bg-secondary rounded h-100 p-4">
-                            <h6 class="mb-4">category adding</h6>
+                            <h6 class="mb-4">Add coupen</h6>
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" name="category" id="floatingInput"
-                                    placeholder="Name-product" name="category">
-                                <label for="floatingInput">categorie name</label>
+                                <input type="text" class="form-control"  id="floatingInput"
+                                    placeholder="code" name="code">
+                                <label for="floatingInput">Coupen code</label>
                             </div>
-                            <!-- <div class="form-floating mb-3">
-                                <input  name="type"  type="text" class="form-control" id="floatingInput"
-                                    placeholder="type">
-                                <label for="floatingInput">type</label>
-                            </div> -->
-                            <!-- <div class="form-floating mb-3">
-                                <input type="number"  name="price" class="form-control" id="floatingInput"
-                                    placeholder="price">
-                                <label for="floatingInput">price</label>
-                            </div> -->
-                            <!-- <div class="form-floating mb-3">
-                                <input name="stocks" type="number" class="form-control" id="floatingInput"
+                            <div class="form-floating mb-3">
+                                <input type="number"  name="discount" class="form-control" id="floatingInput"
+                                    placeholder="discount">
+                                <label for="floatingInput">percentage</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input name="minOrderAmount" type="number" class="form-control" id="floatingInput"
                                     placeholder="suitable-for">
-                                <label for="floatingInput">stock</label>
-                            </div> -->
-                            <!-- <div class="form-floating mb-3">
-                                <input type="text" name="brandName" class="form-control" id="floatingInput"
-                                    placeholder="Brand">
-                                <label for="floatingInput">Brand name</label>
-                            </div> -->
-                            <!-- <div class="form-floating mb-3">
-                                <input type="text" class="form-control" name="size" id="floatingInput"
-                                    placeholder="Size">
-                                <label for="floatingInput">Size</label>
-                            </div> -->
-                            <!-- <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="floatingInput"
-                                    placeholder="seller" name="seller">
-                                <label for="floatingInput">seller</label>
-                            </div> -->
-                           
-                            <!-- <div class="form-floating mb-3">
-                                
-                                <select class="form-select"  name="catogery" id="floatingSelect"
-                                    aria-label="Floating label select example" >
-                                    <option selected>categories</option>
-                                    <option value="men">men</option>
-                                    <option value="women">women</option>
-                                    <option value="Baby">Baby</option>
-                                </select>
-                                <label for="floatingSelect">Select categorie</label>
-                            </div> -->
-                            <!-- <div class="form-floating">
-                                <textarea class="form-control" name="discription" placeholder="Leave a comment here"
-                                    id="floatingTextarea" style="height: 150px;"></textarea>
-                                    < <input type="text" class="form-control" id="floatingInput"
-                                    placeholder="discription" name="discription"> -->
-                                <label for="floatingTextarea">discription</label>
-                                
+                                <label for="floatingInput"> Min order Amount</label>
                             </div>
-                            <!-- <div class="col-sm-12 col-xl-6">
-                                <div class="bg-secondary rounded h-100 p-4">
-                                    <h6 class="mb-4">File Input</h6>
-                                    <div class="mb-3">
-                                        <label for="formFile" class="form-label">Default file input example</label>
-                                        <input class="form-control bg-dark" type="file" multiple name="images" id="formFile">
-                                    </div>
-                                   
-                                    
-                                </div>
-                            </div> -->
+                            <div class="form-floating mb-3">
+                                <input type="number" name="maxDiscountAmount" class="form-control" id="floatingInput"
+                                    placeholder="maxDiscountAmount">
+                                <label for="floatingInput">Max discounnt amount</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="number" name="usersAllowed" class="form-control" id="floatingInput"
+                                    placeholder="usersAllowed">
+                                <label for="floatingInput">Users Allowed</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" name="expiresAt" id="floatingInput"
+                                    placeholder="expiresAt">
+                                <label for="floatingInput">Expire date</label>
+                            </div>
                             <button type="submit">sumbite</button>
 
+                        </form>
+                        
+
                         </div>
-                    </form>           
+                    
+                                       
                        
                      
                     </div>
-                    <table class="table table-dark">
-                        <thead>
+                    <div class="table-responsive col-sm-12 col-xl-6">
+                        <table class="table">
+                    <thead>
+                    <tr> 
+                        <th class="col">code</th>
+                        <th class="col">discount</th>
+                        <th class="col">MinAmount</th>
+                        <th class="col">maxAmount</th>
+                        <th class="col">Expires </th>
+                        <th class="col">Allowedusers</th>
+                        <th class="col">Status</th>
+
+          
+                    </tr>
+                    </thead>
+                       <tbody>
+                          <% coupen.forEach((element)=>{%>  
                           <tr>
-                           
-                            <th scope="col">categorie</th>
-                            <th scope="col">options</th>
+                           <td><%=element.code%></td> 
+                           <td>%<%=element.discount%></td>
+                           <td>₹<%=element.minOrderAmount%></td>
+                           <td>₹<%=element.maxDiscountAmount%></td>
+                           <td><%=element.expiresAt%></td>
+                           <td><%=element.usersAllowed%></td>
+                           <td> <% if (element.isActive==false) { %>
+                            <form action="isActiveTrue?q=<%=element._id%>" method="post">
+                              <button type="submit" class="btn btn-danger"  > Active</button>
+                            </form>
                             
-                           
-                          </tr>
-                        </thead>
-                   
-                      
-                              <tbody>
-                                <% categorie.forEach((x)=>{ %>
-                              <tr>
-                               <td><%=x.category%></td>  
-                             <td> <form action="categorieDelete?q=<%=x._id%>" method="post">
-                                <button type="submit" class="  btn btn-danger" onclick="return confirm('are you want to delete<%=x.category%>')">
-                                  Delete</button> </td>                     
-                             </tr> 
-                            <%})%>                 
-                        </tbody>
-                       
-                      </table>
-                
-                   
+              
+                  
+                          <% } else { %>
+                            <form action="isActiveFalse?q=<%=element._id%>" method="post">
+                              <button type="submit" class="  btn btn-success" >
+                                No active</button>
+                                </form>
+                        <%}%> </td> 
+                        <td><form action="deleteCoupen?q=<%=element._id%>" method="post">
+                            <button type="submit" class="btn btn-danger"  > Delete</button>
+                          </form></td>
+                         </tr>
+                         <%})%>           
+                      </tbody>
+                   </table>
+                </div>
                    
                    
                     <!-- <div class="col-sm-12 col-xl-6">

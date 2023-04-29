@@ -47,4 +47,5 @@ router.get('/deleteAdress',controller.adressDelete)
 router.post('/search',controller.searching)
 router.post('/categorychange',controller.categoryChange)
 router.get('/returnOrder', controller.orderReturn)
+router.post('/applyCoupen',controller.ApplyCode)
 module.exports = router

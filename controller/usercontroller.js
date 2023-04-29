@@ -8,9 +8,15 @@ const ObjectId = require("mongoose").Types.ObjectId;
 const orderSchema = require("../models/order-schema");
 const Razorpay = require("razorpay");
 const { OrderedBulkOperation } = require("mongodb");
+const  coupenSchema = require("../models/coupen")
 const Subcategory = require("../models/subcategorie-schema");
 const { response } = require("express");
 let otp1 = undefined;
+const couponStore={
+  id:undefined,
+  discount:undefined,
+  maxAmount:undefined
+}
 var instance = new Razorpay({
   key_id: "rzp_test_8emA6zzli6nGP1",
   key_secret: "O4RlOXRxnLAX8IaXM3ifqFZZ", 
@@ -264,6 +270,7 @@ module.exports = {
         acc = curr.quantity * curr.product.price + acc;
         return acc;
       }, 0);
+     
       let actualPrice= userCart.cart.reduce((acc, curr) => {
         acc = curr.quantity * curr.product.price + acc;
         return acc;
@@ -271,8 +278,33 @@ module.exports = {
       const paymentOption = req.query.paymentOption;
       const billingAdress = req.query.Adress;
       const wallet  = req.query.wallet
+      let couponid = req.query.coupenid
+      let coupon=null
       const user = userCart._id;
       const date = Date.now();
+      if(couponStore.id==couponid){
+         console.log(totelAmount)
+        let actualPrice = parseFloat(totelAmount)
+        let discountPercentage = parseFloat(couponStore.discount)
+        let maxAmount = parseFloat(couponStore.maxAmount)
+        let price = actualPrice*(discountPercentage/100)
+        let discount = actualPrice-price
+        let maxDiscount = actualPrice-maxAmount
+
+        if(discount<=maxDiscount){
+          totelAmount = parseInt(discount)
+        }
+        if(discount>maxDiscount){
+           totelAmount = parseInt(maxDiscount)
+        }
+        console.log(totelAmount)
+       
+coupon=couponid
+couponStore.id=undefined
+couponStore.discount=undefined
+couponStore.maxAmount=undefined
+couponid=undefined
+      }
       if(wallet=='useWallet'){
         const userEmail = req.session.email
          let userCart = await Schema.findOne({ email: userEmail }).populate({
@@ -334,7 +366,7 @@ module.exports = {
      
 
     } catch (err) {
-      res.redirect("back");
+     console.log(err)
     }
   },
   accountView: async (req, res) => {
@@ -416,5 +448,57 @@ module.exports = {
     }
      
 
+  },
+  ApplyCode:async(req,res)=>{
+    try{
+    
+      const userEmail = req.session.email
+      let userCart = await Schema.findOne({ email: userEmail }).populate({
+        path: "cart.product",
+        model: "prodect",
+      })
+      let totelAmount = userCart.cart.reduce((acc, curr) => {
+        acc = curr.quantity * curr.product.price + acc;
+        return acc;
+      }, 0);
+       const coupenid= req.query.id
+      
+        const coupen  = await coupenSchema.findOne({code:coupenid})
+        const code = coupen.code
+        const discount = coupen.discount
+        const  minOrderAmount = coupen.  minOrderAmount
+        const maxDiscountAmount = coupen.maxDiscountAmount
+        const expireDate = coupen.expiresAt
+       if(!coupen){ res.json({err:'coupen not found'})
+       return
+    }
+       else{
+        const currentDate = Date.now()
+        if(currentDate>expireDate){
+          res.json({err:'coupon expired'})
+          return
+        }
+        if(!coupen.isActive){ 
+        
+          res.json({err:'coupon expiared'})
+          return
+        }
+        if(minOrderAmount>totelAmount){
+         res.json({err:`you needed to purchase above ${minOrderAmount}`})
+         return
+        }
+        await coupenSchema.findOneAndUpdate({code:coupenid},{$inc:{usersAllowed:1}})
+        couponStore.id = coupenid
+        couponStore.discount = discount
+        couponStore.maxAmount = maxDiscountAmount
+       
+        res.json({validated:true,discount:discount,maxAmount: maxDiscountAmount})
+       
+       }
+   
+      }catch(err){
+    console.log(err)
+    
   }
+}
 }
