@@ -10,28 +10,10 @@ let Router =  express.Router()
   }
  })
  Router.post('/signin',controller.checker)
-//  Router.get('/widget.html',(req,res)=>{
-//    res.render('admin/widget')
-//  })
-//  Router.get('/chart.html',(req,res)=>{
-//    res.render('admin/chart')
-//  })
-//  Router.get('/element.html',(req,res)=>{
-//    res.render('admin/element')
-//  })
- Router.get('/form.html',(req,res)=>{
-   res.render('admin/form')
- })
-//  Router.get('/button.html',(req,res)=>{
-//    res.render('admin/button')
-//  })
-//  Router.get('/table.html',(req,res)=>{
-//    res.render('admin/table')
-//  })
-//  Router.get('/typography.html',(req,res)=>{
-//    res.render('admin/typography')
-//  })
- Router.get('/index.html',controller.dashboard)
+
+ Router.get('/form',controller.FormShow)
+
+ Router.get('/index',controller.dashboard)
  Router.get('/Adminlogout',(req,res)=>{
     req.session.adminloggedin = false
     res.redirect('/admin')
@@ -57,5 +39,10 @@ let Router =  express.Router()
  router.post('/isActiveFalse',controller.isActiveFalse)
  router.post('/isActiveTrue',controller.isActiveTrue)
  router.post('/deleteCoupen',controller.deleteCoupen)
+ router.get('/Banner',controller.showBanner)
+ router.post('/addBanner',controller.bannerAdding)
+ router.post('/bannerIsActiveFalse',controller.bannerIsActiveFalse)
+ router.post('/bannerIsActiveTrue',controller.bannerIsActiveTrue)
+ router.post('/deletebanner',controller.bannerDelete)
  
   module.exports = Router 

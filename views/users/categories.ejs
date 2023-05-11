@@ -47,16 +47,8 @@
 <ul id="navigation">
 
 <%  categorie.forEach((x)=>{ %>
-<li><a href="categories.html"><%= x.category %></a></li>
+<li><a href="categories?q=<%=x.category%>"><%= x.category %></a></li>
 <%})%>
-<li><a href="#">Pages <i class="fas fa-angle-down"></i></a>
-<ul class="submenu">
-    <li><a href="/logout">logout</a></li>
-<li><a href="cart.html">Cart</a></li>
-
-<li><a href="checkout.html">Product Checkout</a></li>
-</ul>
-</li>
 <li><a href="/logout">logout</a></li>
 
 </ul>
@@ -72,8 +64,8 @@
 </a>
 </div>
 </li>
-<li> <a href="login.html"><span class="flaticon-user"></span></a></li>
-<li class="cart"><a href="cart.html"><span class="flaticon-shopping-cart"></span></a> </li>
+<li> <a href="accountView"><span class="flaticon-user"></span></a></li>
+<li class="cart"><a href="cart"><span class="flaticon-shopping-cart"></span></a> </li>
 </ul>
 </div>
 </div>
@@ -91,9 +83,19 @@
 </div>
 </div>
 </div>
-<div class="header-bottom text-center">
-<p>Sale Up To 50% Biggest Discounts. Hurry! Limited Perriod Offer <a href="#" class="browse-btn">Shop Now</a></p>
-</div>
+<%banner.forEach((element)=>{%>
+                <%if(element.isActive==true){%>
+            <div class="header-bottom text-center">
+                <p><%=element.description%><a href="categories?q=men" class="browse-btn">Shop
+                        Now</a></p>
+            </div>
+            <%}else{%>
+                <div class="header-bottom text-center" hidden>
+                <p hidden><a href="categories" class="browse-btn" hidden>Shop
+                        Now</a></p>
+            </div>
+                <%}%>
+            <%})%>
 </div>
 </header>
 <main>
@@ -105,11 +107,8 @@
 <div class="slider-area">
 <div class="slider-height2 slider-bg4 d-flex align-items-center justify-content-center">
 <div class="hero-caption hero-caption2">
-<h2>Men</h2>
+<h2><%=orginalCategory%></h2>
 <nav aria-label="breadcrumb">
-<ol class="breadcrumb justify-content-center">
-<li class="breadcrumb-item"><a href="/logout">logout</a></li>
-</ol>
 </nav>
 </div>
 </div>
@@ -159,7 +158,7 @@
 <div class="properties pb-30">
 <div class="properties-card">
 <div class="properties-img">
-<a href="pro-details.html?q=<%=product._id%>"><img src="image/products/<%=product.images[0]%>" alt=""></a>
+<a href="pro-details?q=<%=product._id%>"><img src="image/products/<%=product.images[0]%>" alt=""></a>
 <div class="socal_icon">
 <a href="#"><i class="ti-shopping-cart"></i></a>
 <a href="#"><i class="ti-heart"></i></a>
@@ -167,7 +166,7 @@
 </div>
 </div>
 <div class="properties-caption properties-caption2">
-<h3><a href="pro-details.html?q=<%=product._id%>"><%=product.productName %></a></h3>
+<h3><a href="pro-details?q=<%=product._id%>"><%=product.productName %></a></h3>
 <div class="properties-footer">
 <div class="price">
 <span>₹<%=product.price%> <span>₹<%=product.price%></span></span>
@@ -182,10 +181,6 @@
 </div>
 </div>
 </div>
-
-
-
-
 
 
 </main>

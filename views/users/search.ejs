@@ -49,24 +49,13 @@
                         <div class="main-menu d-none d-lg-block">
                             <nav>
                                 <ul id="navigation">
-
-
-
-                                    <li><a href="#">Pages <i class="fas fa-angle-down"></i></a>
-                                        <ul class="submenu">
-                                            <li><a href="/logout">Logout</a></li>
-                                            <li><a href="cart.html">Cart</a></li>
-                                            <li><a href="pro-details.html">Product Details</a></li>
-                                            <li><a href="checkout.html">Product Checkout</a></li>
-                                        </ul>
-                                    </li>
                                     <% categorie.forEach((x)=>{ %>
-                                        <li><a href="categories.html">
+                                        <li><a href="categories">
                                                 <%= x.category %>
                                             </a></li>
                                         <%})%>
                                         <li><a href="/logout">Logout</a></li>
-                                            <li><a href="contact.html">Contact</a></li>
+                                            
                                 </ul>
                             </nav>
                         </div>
@@ -80,8 +69,8 @@
                                         </a>
                                     </div>
                                 </li>
-                                <li> <a href="login.html"><span class="flaticon-user"></span></a></li>
-                                <li class="cart"><a href="cart.html"><span class="flaticon-shopping-cart"></span></a>
+                                <li> <a href="accountView"><span class="flaticon-user"></span></a></li>
+                                <li class="cart"><a href="cart"><span class="flaticon-shopping-cart"></span></a>
                                 </li>
                             </ul>
                         </div>
@@ -121,7 +110,7 @@
                         <div class="properties pb-30">
                         <div class="properties-card">
                         <div class="properties-img">
-                        <a href="pro-details.html?q=<%=product._id%>"><img src="image/products/<%=product.images[0]%>" alt=""></a>
+                        <a href="pro-details?q=<%=product._id%>"><img src="image/products/<%=product.images[0]%>" alt=""></a>
                         <div class="socal_icon">
                         <a href="#"><i class="ti-shopping-cart"></i></a>
                         <a href="#"><i class="ti-heart"></i></a>
@@ -129,7 +118,7 @@
                         </div>
                         </div>
                         <div class="properties-caption properties-caption2">
-                        <h3><a href="pro-details.html?q=<%=product._id%>"><%=product.productName %></a></h3>
+                        <h3><a href="pro-details?q=<%=product._id%>"><%=product.productName %></a></h3>
                         <div class="properties-footer">
                         <div class="price">
                         <span>₹<%=product.price%>

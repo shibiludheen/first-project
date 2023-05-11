@@ -1,6 +1,7 @@
 const Schema = require("../models/user-schema");
 //  const bycript  = require('bycrypt')
 const eoverify = require("eoverify");
+const bannerSchema = require('../models/banner-schema')
 const category = require("../models/categorie-schema");
 const { schema, find } = require("../models/user-schema");
 const product1 = require("../models/product-schema");
@@ -11,6 +12,7 @@ const { OrderedBulkOperation } = require("mongodb");
 const  coupenSchema = require("../models/coupen")
 const Subcategory = require("../models/subcategorie-schema");
 const { response } = require("express");
+
 let otp1 = undefined;
 const couponStore={
   id:undefined,
@@ -59,6 +61,7 @@ module.exports = {
     }
   },
   otpChecker: async (req, res) => {
+    try{
     const oldOtp = parseInt(req.body.otp);
     const categorie = await category.find();
     const subcategory = await Subcategory.find()
@@ -71,6 +74,9 @@ module.exports = {
       const error = "This is invalid";
       res.render("users/otp", { user, error });
     }
+  }catch(err){
+    res.render('users/errorPage')
+  }
   },
   loginChecker: async (req, res) => {
     try {
@@ -92,8 +98,9 @@ module.exports = {
 
         req.session.email = users.email;
         let product = await product1.find()
+        let banner =   await bannerSchema.find()
 
-        res.render("users/index", { categorie, userCart ,subcategory , product});
+        res.render("users/index", { categorie, userCart ,subcategory , product,banner});
        
       } else {
         const error = "You have enterd the wrong password or email";
@@ -105,20 +112,31 @@ module.exports = {
     }
   },
   productAdder: async (req, res) => {
+    try{
+    const orginalCategory = req.query.q
     const subcategory = await Subcategory.find()
-    const product = await product1.find();
+    const product = await product1.find({catogery:orginalCategory});
     const categorie = await category.find();
-    res.render("users/categories", { product, categorie ,subcategory});
+    let banner =   await bannerSchema.find()
+    res.render("users/categories", { product, categorie ,subcategory,banner,orginalCategory});
+    }catch(err){
+      res.render('users/errorPage')
+    }
   },
   productViewer: async (req, res) => {
+    try{
     const product = await product1.findOne({ _id: req.query.q });
     const subcategory = await Subcategory.find()
     const userEmail = req.session.email;
-
+    let banner =   await bannerSchema.find()
     const categorie = await category.find();
-    res.render("users/pro-details", { product, categorie , subcategory });
+    res.render("users/pro-details", { product, categorie , subcategory,banner });
+    }catch(err){
+      res.render('users/errorPage')
+    }
   },
   cartAdder: async (req, res) => {
+    try{
     let userEmail = req.session.email;
     const categorie = await category.find();
     let Id = req.query.q;
@@ -130,33 +148,45 @@ module.exports = {
       path: "cart.product",
       model: "prodect",
     });
-
+    let banner =   await bannerSchema.find()
     if (user) {
       await Schema.updateOne(
         { email: req.session.email, cart: { $elemMatch: { product: Id } } },
         { $inc: { "cart.$.quantity": 1 } }
       );
-      res.render("users/cart", { categorie, userCart });
+      res.render("users/cart", { categorie, userCart,banner });
     } else {
       await Schema.updateOne(
         { email: req.session.email },
         { $addToSet: { cart: { product: ObjectId(Id) } } }
       );
-      res.render("users/cart", { categorie, userCart });
+      res.render("users/cart", { categorie, userCart ,banner});
     }
+  }catch(err){
+    res.render('users/errorPage')
+  }
   },
   showCart: async (req, res) => {
+    try{
     let userEmail = req.session.email;
     const categorie = await category.find();
+    let banner =   await bannerSchema.find()
+  
 
     let userCart = await Schema.findOne({ email: userEmail }).populate({
       path: "cart.product",
       model: "prodect",
     });
+  
+    
 
-    res.render("users/cart", { userCart, categorie });
+    res.render("users/cart", { userCart, categorie ,banner});
+  }catch(err){
+    res.render('users/errorPage')
+  }
   },
   sessionHandeler: async (req, res) => {
+    try{
     const categorie = await category.find();
     const subcategory = await Subcategory.find()
     const userEmail = req.session.email;
@@ -167,12 +197,17 @@ module.exports = {
 
     if (req.session.loggedin) {
       let product = await product1.find()
-      res.render("users/index", { categorie, userCart , subcategory,product });
+      let banner =   await bannerSchema.find()
+      res.render("users/index", { categorie, userCart , subcategory,product,banner });
     } else {
       res.render("users/login");                  
     }
+  }catch(err){
+    res.render('users/errorPage')
+  }
   },
   quantityPlus: async (req, res) => {
+    try{
     let productId = req.query.q;
     let user = req.session.email;
     let product = await Schema.updateOne(
@@ -185,8 +220,12 @@ module.exports = {
     );
 
     res.json({ changed: true });
+    }catch(err){
+      res.render('users/errorPage')
+    }
   },
   quantityDic: async (req, res) => {
+    try{
     let productId = req.query.q;
     let user = req.session.email;
     let product = await Schema.updateOne(
@@ -199,8 +238,12 @@ module.exports = {
     );
 
     res.json({ changed: true });
+    }catch(err){
+      res.render('users/errorPage')
+    }
   },
   cartDeleting: async (req, res) => {
+    try{
     let productId = req.query.q;
 
     let user = req.session.email;
@@ -211,6 +254,9 @@ module.exports = {
     );
 
     res.redirect("back");
+    }catch(err){
+      res.render('users/errorPage')
+    }
   },
   adressAdder: async (req, res) => {
     try {
@@ -223,7 +269,7 @@ module.exports = {
       );
       res.redirect("back");
     } catch (err) {
-      res.redirect("/");
+      res.render('users/errorPage')
     }
   },
   checkoutProductViewer: async (req, res) => {
@@ -239,10 +285,10 @@ module.exports = {
         acc = curr.quantity * curr.product.price + acc;
         return acc;
       }, 0);
-
-      res.render("users/checkout", { userCart, subTotal, categorie,subcategory });
+      let banner =   await bannerSchema.find()
+      res.render("users/checkout", { userCart, subTotal, categorie,subcategory,banner });
     } catch (err) {
-      res.redirect("/");
+      res.render('users/errorPage')
     }
   },
   resendOtp: async (req, res) => {
@@ -277,6 +323,7 @@ module.exports = {
       }, 0);
       const paymentOption = req.query.paymentOption;
       const billingAdress = req.query.Adress;
+      console.log(billingAdress)
       const wallet  = req.query.wallet
       let couponid = req.query.coupenid
       let coupon=null
@@ -331,6 +378,7 @@ couponid=undefined
          await Schema.findOneAndUpdate({email:userEmail},{$inc:{wallet:-(userCart.takeWallet)}})
        }
        }
+       
        if(paymentOption=="COD"||paymentOption=="ONLINE"){
       const newOrder = await orderSchema.create({
         paymentOption,
@@ -343,7 +391,6 @@ couponid=undefined
         const userEmail = req.session.email
         await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
          res.json({allAmountWallet:true})
-
       }else{
       if (paymentOption == "ONLINE") {
         var options = {
@@ -351,68 +398,108 @@ couponid=undefined
           currency: "INR",
           receipt: "" + newOrder._id,
         };
+        req.session.order = newOrder._id;
         instance.orders.create(options, function (err, order) {
           if (err) console.log(err);
 
           res.json({ methode: "online", order: order });
         });
-      } else {
+      } else if(paymentOption=="COD") {
+        req.session.order = newOrder._id;
+       
+       res.json({methode:"COD"})
+      }else{
         userEmail:req.session.email
         await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
-      
       }
-    }
+
+    
+  }
     }
      
 
     } catch (err) {
-     console.log(err)
+      res.render('users/errorPage')
     }
   },
-  accountView: async (req, res) => {
-    try {
+  paymentStatusChanger:async(req,res,next)=>{
+    try{
       const userEmail = req.session.email;
+      const orderId = req.session.order;
+      let order = await orderSchema.findOne({ _id: orderId })
+      console.log(order)
       let user = await Schema.findOne({ email: userEmail }).populate({
         path: "cart.product",
         model: "prodect",
-      });5
+      });
       const response =  req.query.q
-      let userid = user._id;
-      let order = await orderSchema.findOne({ user: userid });
-      if(response=="paid"){
-       await orderSchema.findOneAndUpdate({user:userid},{$set:{status:"paid"}})
+      console.log(response)
+      console.log(order.paymentOption)
+      if(response=="paid"&&order.paymentOption=="ONLINE"){
+       await orderSchema.findOneAndUpdate({_id:orderId},{$set:{status:"paid"}})
+      } 
+      if(response=="Cod"&&order.paymentOption=="COD"){
+        await orderSchema.findOneAndUpdate({_id:orderId},{$set:{status:"Cod"}})
       }
-     const categorie = await category.find();
-      res.render("users/account", { user, categorie, order });
+      
+      next()
     } catch (err) {
-      res.redirect("/");
-    }
+      console.log(err)
+         }
+
+  },
+  accountView: async (req, res) => {
+      try{
+        const userEmail = req.session.email;
+
+        let user = await Schema.findOne({ email: userEmail }).populate({
+          path: "cart.product",
+          model: "prodect",
+        });
+        const categorie = await category.find();
+        let banner =   await bannerSchema.find()
+        let userid = user._id;
+        let order = await orderSchema.findOne({ user: userid }).sort({date:-1});
+  
+      
+        res.render("users/account", { user, categorie, order ,banner});
+      } catch (err) {
+        res.render('users/errorPage')
+           }
+  
   },
   orderDelete: async (req, res) => { 
   try{
     const  orderid = req.query.q;
       const order =  await orderSchema.findOne({id:orderid}).populate('user')
-      const user  =  order.user._id
-      console.log(user)
+      console.log(order)
+      const user  =  req.session.email
       const amount = order.totelAmount
-      if(order.status=="paid"){ 
-     await Schema.findOneAndUpdate({_id:user},{$inc:{wallet:amount}}) 
-      }    
+      console.log(amount)
+      if(order.status=="paid"&&order.paymentOption=="ONLINE"){ 
+     await Schema.findOneAndUpdate({email:user},{$inc:{wallet:amount}}) 
+      }else{
+        res.redirect('back')
+      } 
     const orderdetail = await orderSchema.findOneAndDelete({ _id: orderid });
     res.redirect("back");
   }catch(err){
-    res.redirect('back')
+    console.log(err)
 
   }
   },
   adressDelete: async (req, res) => {
+    try{
     adressid = req.query.q;
     const userEmail = req.session.email;
     await Schema.updateOne(
       { email: userEmail },
       { $pull: { Adress: { _id: adressid } } }
     );
-    res.redirect("back");
+    res.redirect("back"); 
+    }catch(err){
+      res.render('users/errorPage')
+    }
   },
   searching: async (req, res) => {
     try {
@@ -422,19 +509,20 @@ couponid=undefined
       let product = await product1.find({
         productName: { $regex: searchText, $options: "i" },
       });
-
-      res.render("users/search", { product, categorie });
+      let banner =   await bannerSchema.find()
+      res.render("users/search", { product, categorie ,banner});
     } catch (err) {
-      res.redirect("back");
+      res.render('users/errorPage')
     }
   },categoryChange: async(req,res)=>{
     try{
      const body  = req.body.category
      const categorie = await category.find();
       const product = await product1.find({type: { $regex: body, $options: "i" }});
-      res.render("users/categorychange", { product, categorie });
+      let banner =   await bannerSchema.find()
+      res.render("users/categorychange", { product, categorie,banner });
     }catch(err){
-      res.redirect('back')
+      res.render('users/errorPage')
     }
    
   },
@@ -444,7 +532,7 @@ couponid=undefined
       await  orderSchema.findOneAndUpdate({_id:orderid},{$set:{orderStatus:"return"}})
       res.redirect('back')
     }catch{
-      res.redirect('back')
+      res.render('users/errorPage')
     }
      
 
@@ -497,8 +585,20 @@ couponid=undefined
        }
    
       }catch(err){
-    console.log(err)
+        res.render('users/errorPage')
     
+  }
+},
+orderHistoryShow:async(req,res)=>{
+  try{
+    const userid = req.query.q
+    const categorie = await category.find();
+     let banner =   await bannerSchema.find()
+      let order = await orderSchema.find({ user: userid });
+    res.render('users/orderHistoryPage',{order,banner,categorie})
+
+  }catch(err){
+    console.log(err)
   }
 }
 }

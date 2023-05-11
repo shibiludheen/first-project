@@ -59,23 +59,17 @@
                     </div>
                 </div>
                 <div class="navbar-nav w-100">
-                    <a href="index.html" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Elements</a>
-                        <!-- <div class="dropdown-menu bg-transparent border-0">
-                            <a href="button.html" class="dropdown-item">Buttons</a>
-                            <a href="typography.html" class="dropdown-item">Typography</a>
-                            <a href="element.html" class="dropdown-item">Other Elements</a>
-                        </div> -->
-                    </div>
+                    <a href="index" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+         
                      <!-- <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a> -->
-                    <a href="form.html" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>Addproduct</a>
-                    <a href="categoriesadding" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>categoryAdding</a>
-                    <a href="subcategoriesadding" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>Subcategoriesadd</a>
-                    <a href="users" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>Users</a>
-                    <a href="productController" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>productController</a>
-                    <a href="addCoupen" class="nav-item nav-link  active"><i class="fa fa-keyboard me-2"></i>Coupen add</a>
-                    <a href="orderDelete" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>order detail</a>
+                     <a href="form" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Product Add</a>
+                     <a href="categoriesadding" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Category add</a>
+                     <a href="subcategoriesadding" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>Subcategory Add</a>
+                     <a href="Banner" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>Banner Manage</a>
+                     <a href="users" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Users</a>
+                     <a href="productController" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>Product Manage</a>
+                     <a href="addCoupen" class="nav-item nav-link  "><i class="fa fa-keyboard me-2"></i>Coupon Add</a>
+                     <a href="orderDelete" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>order detail</a>
                     <!-- <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a> -->
                     <!-- <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a> --> 
                      <!-- <div class="nav-item dropdown">
@@ -97,7 +91,6 @@
         <div class="content">
             <!-- Navbar Start -->
             <nav class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
-                <button  type="submit"> <a href="/Adminlogout">logout</a>  </button>
                 <a href="index.html" class="navbar-brand d-flex d-lg-none me-4">
                     <h2 class="text-primary mb-0"><i class="fa fa-user-edit"></i></h2>
                 </a>
@@ -108,6 +101,8 @@
                     <input class="form-control bg-dark border-0" type="search" placeholder="Search">
                 </form> -->
                 <div class="navbar-nav align-items-center ms-auto">
+                    <button  type="submit" class="btn btn-dark"> <a href="/Adminlogout">logout</a>  </button>
+
                     <div class="nav-item dropdown">
                         <!-- <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="fa fa-envelope me-lg-2"></i>
@@ -268,38 +263,38 @@
                     <div class="col-sm-12 col-xl-6">
                         <form action="addCoupen" method="post" >
                         <div class="bg-secondary rounded h-100 p-4">
-                            <h6 class="mb-4">Add coupen</h6>
+                            <h6 class="mb-4">Add coupon</h6>
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control"  id="floatingInput"
+                                <input type="text" required class="form-control"  id="floatingInput"
                                     placeholder="code" name="code">
-                                <label for="floatingInput">Coupen code</label>
+                                <label for="floatingInput">Coupon code</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="number"  name="discount" class="form-control" id="floatingInput"
+                                <input type="number"  required name="discount" class="form-control" id="floatingInput"
                                     placeholder="discount">
                                 <label for="floatingInput">percentage</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input name="minOrderAmount" type="number" class="form-control" id="floatingInput"
+                                <input name="minOrderAmount" required type="number" class="form-control" id="floatingInput"
                                     placeholder="suitable-for">
                                 <label for="floatingInput"> Min order Amount</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="number" name="maxDiscountAmount" class="form-control" id="floatingInput"
+                                <input type="number" required name="maxDiscountAmount" class="form-control" id="floatingInput"
                                     placeholder="maxDiscountAmount">
                                 <label for="floatingInput">Max discounnt amount</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="number" name="usersAllowed" class="form-control" id="floatingInput"
+                                <input type="number"  required name="usersAllowed" class="form-control" id="floatingInput"
                                     placeholder="usersAllowed">
                                 <label for="floatingInput">Users Allowed</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="date" class="form-control" name="expiresAt" id="floatingInput"
+                                <input type="date" required class="form-control" name="expiresAt" id="floatingInput"
                                     placeholder="expiresAt">
                                 <label for="floatingInput">Expire date</label>
                             </div>
-                            <button type="submit">sumbite</button>
+                            <button type="submit" class="btn btn-dark">submit</button>
 
                         </form>
                         

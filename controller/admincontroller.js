@@ -7,6 +7,7 @@ const userSchema = require("../models/user-schema");
 const productSchema = require("../models/product-schema");
 const subcategory = require("../models/subcategorie-schema");
 const coupenSchema = require('../models/coupen')
+const bannerSchema = require('../models/banner-schema')
 const Excel = require('exceljs')
 const PDFDocument = require('pdfkit-table')
 const order = require("../models/order-schema");
@@ -69,7 +70,7 @@ module.exports = {
    const totalOrdersCount = totalOrders.map((ele)=>ele.totalOrders)
     res.render('admin/index',{totalAmount,totelSale,totelUser,order,labels:JSON.stringify(labels),data:JSON.stringify(data),totalOrders:JSON.stringify(totalOrdersCount)})
   }catch(err){
-    res.send(err)
+    res.render('admin/errorPage')
   }
 
   },
@@ -106,10 +107,11 @@ module.exports = {
       });
       res.redirect("back");
     } catch (err) {
-      res.redirect("/admin");
+      res.render('admin/errorPage')
     }
   },
   imageAdding: async (req, res, next) => {
+    try{
     //for multer config
     const multerstorage = multer.diskStorage({
       destination: (req, file, cb) => {
@@ -134,18 +136,30 @@ module.exports = {
         next();
       }
     });
+  }catch(err){
+    res.render('admin/errorPage')
+  }
   },
   categoriesAdding: async (req, res) => {
+    try{
     const category = req.body;
     const categories = await categorieSchema.create(category);
     res.redirect("back");
+    }catch(err){
+      res.render('admin/errorPage')
+    }
   },
   usersview: async (req, res) => {
+    try{
     const users = await userSchema.find();
 
     res.render("admin/users", { users });
+    }catch(Err){
+      res.render('admin/errorPage')
+    }
   },
   userBlock: async (req, res) => {
+    try{
     const userid = req.query.q;
     console.log(userid);
     await userSchema.findOneAndUpdate(
@@ -153,25 +167,40 @@ module.exports = {
       { $set: { status: false } }
     );
     res.redirect("back");
+    }catch(err){
+      res.render('admin/errorPage')
+    }
   },
   userUnblock: async (req, res) => {
+    try{
     const userid = req.query.q;
     await userSchema.findOneAndUpdate(
       { _id: userid },
       { $set: { status: true } }
     );
     res.redirect("back");
+    }catch(err){
+      res.render('admin/errorPage')
+    }
   },
   productview: async (req, res) => {
+    try{
     const product = await productSchema.find();
 
     res.render("admin/productcontroller", { product });
+    }catch(err){
+      res.render('admin/errorPage')
+    }
   },
   productUnlist: async (req, res) => {
+    try{
     const productId = req.query.q;
     console.log(productId);
     await productSchema.findByIdAndUpdate({_id:productId},{$set:{status:false}})
     res.redirect("back");
+    }catch(err){
+      res.render('admin/errorPage')
+    }
   },  productlist: async (req, res) => {
     const productId = req.query.q;
     console.log(productId);
@@ -243,7 +272,7 @@ module.exports = {
         $gte: fromDate,
         $lte: toDate,
       }}).populate('products.product');
-   if(file=='excel'){
+   if(file=='Excel'){
     const workbook = new Excel.Workbook();
     const worksheet = workbook.addWorksheet('SalesReport');
     worksheet.addRow(['Order id', 'billingAdress', 'Total','payment methode','date','order status','payment status']);
@@ -288,7 +317,7 @@ doc.end();
 
     }
     catch(err){
-        res.send(err);
+      res.render('admin/errorPage')
     }
 
    
@@ -300,7 +329,7 @@ Coupen:async(req,res)=>{
   res.render('admin/coupen',{coupen})
 
  }catch(err){
-  res.send(err)
+  res.render('admin/errorPage')
 
  }
 },
@@ -310,7 +339,7 @@ AddCoupen:async(req,res)=>{
    await coupenSchema.create({code,discount,minOrderAmount,maxDiscountAmount,usersAllowed,expiresAt,isActive})
   res.redirect('back')
   }catch(err){
-    res.send(err)
+    res.render('admin/errorPage')
 
   }
 },
@@ -320,7 +349,7 @@ isActiveFalse:async(req,res)=>{
     await coupenSchema.findOneAndUpdate({_id:id},{$set:{isActive:false}})
     res.redirect('back')
   }catch(err){
-    res.redirect('back')
+    res.render('admin/errorPage')
 
   }
 
@@ -331,7 +360,7 @@ isActiveTrue:async(req,res)=>{
     await coupenSchema.findOneAndUpdate({_id:id},{$set:{isActive:true}})
     res.redirect('back')
   }catch(err){
-    res.redirect('back')
+    res.render('admin/errorPage')
 
   }
 
@@ -341,9 +370,62 @@ isActiveTrue:async(req,res)=>{
    await coupenSchema.findOneAndDelete({_id:id})
    res.redirect('back')
  }catch(err){
-  res.redirect('back')
+  res.render('admin/errorPage')
 
  }
+},FormShow:async(req,res)=>{
+  try{
+   const Categorie =   await categorieSchema.find()
+    res.ren('admin/form',{Categorie})
+
+  }catch(err){
+    res.render('admin/errorPage')
+
+  }
+},showBanner:async(req,res)=>{
+  try{
+    const banner = await bannerSchema.find()
+    res.render('admin/banner',{banner})
+  }catch(err){
+    res.render('admin/errorPage')
+  }
+},bannerAdding:async(req,res)=>{
+  try{
+   const {title,description,expiresAt} = req.body
+       await bannerSchema.create({title,description,expiresAt})
+       res.redirect('back')
+  }catch(err){
+    res.render('admin/errorPage')
+  }
+},bannerIsActiveFalse:async(req,res)=>{
+  try{
+    const bannerId = req.query.q
+    console.log(bannerId)
+    await bannerSchema.findOneAndUpdate({_id:bannerId},{$set:{isActive:false}})
+    res.redirect('back')
+
+  }catch(err){
+    res.render('admin/errorPage')
+  }
+},bannerIsActiveTrue:async(req,res)=>{
+  try{
+    const bannerId = req.query.q
+    console.log(bannerId)
+    await bannerSchema.findOneAndUpdate({_id:bannerId},{$set:{isActive:true}})
+    res.redirect('back')
+
+  }catch(err){
+    res.render('admin/errorPage')
+  }
+},bannerDelete:async(req,res)=>{
+  try{
+   const bannerId = req.query.q
+   await bannerSchema.findOneAndDelete({_id:bannerId})
+   res.redirect('back')
+  }catch(err){
+    res.render('admin/errorPage')
+
+  }
 }
 
 

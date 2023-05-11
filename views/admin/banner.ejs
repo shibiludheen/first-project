@@ -60,7 +60,7 @@
                 </div>
                 <div class="navbar-nav w-100">
                     <a href="index" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-                   
+         
                      <!-- <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a> -->
                      <a href="form" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Product Add</a>
                      <a href="categoriesadding" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Category add</a>
@@ -91,7 +91,6 @@
         <div class="content">
             <!-- Navbar Start -->
             <nav class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
-        
                 <a href="index.html" class="navbar-brand d-flex d-lg-none me-4">
                     <h2 class="text-primary mb-0"><i class="fa fa-user-edit"></i></h2>
                 </a>
@@ -260,53 +259,68 @@
                             </form>
                         </div>
                     </div> -->
-                    <table class="table table-dark">
-                        <thead>
+                    
+                    <div class="col-sm-12 col-xl-6">
+                        <form action="addBanner" method="post" >
+                        <div class="bg-secondary rounded h-100 p-4">
+                            <h6 class="mb-4">Add banner</h6>
+                            <div class="form-floating mb-3">
+                                <input type="text" required class="form-control"  id="floatingInput"
+                                    placeholder="title" name="title">
+                                <label for="floatingInput">Title</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="text"  required name="description" class="form-control" id="floatingInput"
+                                    placeholder="description">
+                                <label for="floatingInput">Description</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="date"  required class="form-control" name="expiresAt" id="floatingInput"
+                                    placeholder="expiresAt">
+                                <label for="floatingInput">Expire date</label>
+                            </div>
+                            <button type="submit" class="btn btn-dark">submit</button>
+
+                        </form>
+                        </div>
+                    </div>
+                    <div class="table-responsive col-sm-12 col-xl-6">
+                        <table class="table">
+                    <thead>
+                    <tr> 
+                        <th class="col">Title</th>
+                        <th class="col">Description</th>
+                        <th class="col">expiresAt</th>
+                     </tr>
+                    </thead>
+                       <tbody>
+                          <% banner.forEach((element)=>{%>  
                           <tr>
-                           
-                            <th scope="col">image</th>
-                            <th scope="col">productName</th>
-                            <th scope="col">brandName</th>
-                            <th scope="col">price</th>
-                            <th scope="col">stocks</th>
-                           
-                          </tr>
-                        </thead>
-                      
-                        <tbody>
-                            <% product.forEach((x)=>{ %>
-                          <tr>
-                            <td><img  height="100px" width="100px"  src="image/products/<%=x.images[0]%>" alt=""></td> 
-                         <td><%=x.productName%></td>  
-                         <td><%=x.brandName%></td>
-                         <td>₹<%=x.price%></td>
-                         <td><%=x.stocks%></td> 
-                         <td> <% if (x.status==false) { %>
-                            <form action="list?q=<%=x._id%>" method="post">
-                              <button type="submit" class="btn btn-success"  onclick="return confirm('are you want to list <%=x.product_name%>')"> list</button>
+                           <td><%=element.title%></td> 
+                           <td>%<%=element.description%></td>
+                           <td>₹<%=element.expiresAt%></td>
+                           <td> <% if (element.isActive==false) { %>
+                            <form action="bannerIsActiveTrue?q=<%=element._id%>" method="post">
+                              <button type="submit" class="btn btn-danger"  > Active</button>
                             </form>
                             
               
                   
                           <% } else { %>
-                            <form action="Unlist?q=<%=x._id%>" method="post">
-                              <button type="submit" class="  btn btn-danger" onclick="return confirm('are you want to unlist <%=x.product_name%>')">
-                                Unlist</button>
+                            <form action="bannerIsActiveFalse?q=<%=element._id%>" method="post">
+                              <button type="submit" class="  btn btn-success" >
+                                No active</button>
                                 </form>
-                        <%}%> </td>   
-
-                        </tr> 
-                        <%})%>                 
-                    </tbody>
-                       
-                      </table>
-
-
-                      
-                       
-                     
-                    </div>
-                   
+                        <%}%> </td> 
+                        <td><form action="deletebanner?q=<%=element._id%>" method="post">
+                            <button type="submit" class="btn btn-danger"  > Delete</button>
+                          </form></td>
+                         </tr>
+                         <%})%>           
+                      </tbody>
+                   </table>
+                </div>
+               
                    
                    
                     <!-- <div class="col-sm-12 col-xl-6">
