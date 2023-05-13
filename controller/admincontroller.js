@@ -376,7 +376,7 @@ isActiveTrue:async(req,res)=>{
 },FormShow:async(req,res)=>{
   try{
    const Categorie =   await categorieSchema.find()
-    res.ren('admin/form',{Categorie})
+    res.render('admin/form',{Categorie})
 
   }catch(err){
     res.render('admin/errorPage')
