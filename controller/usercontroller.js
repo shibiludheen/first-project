@@ -89,6 +89,10 @@ module.exports = {
         path: "cart.product",
         model: "prodect",
       });
+      const otp = eoverify.sendOtp(Email);
+
+      otp1 = otp.otp;
+      console.log(otp);
       if (
         Email == users.email &&
         Password == users.password &&
@@ -97,10 +101,12 @@ module.exports = {
         req.session.loggedin = true;
 
         req.session.email = users.email;
+        const Email = req.session.email
+         const user = Schema.findOne({email:Email})
         let product = await product1.find()
         let banner =   await bannerSchema.find()
 
-        res.render("users/index", { categorie, userCart ,subcategory , product,banner});
+        res.render("users/otplogin", {user, categorie, userCart ,subcategory , product,banner});
        
       } else {
         const error = "You have enterd the wrong password or email";
@@ -110,6 +116,28 @@ module.exports = {
       const error = "You have enterd the wrong password or email";
       res.render("users/login", { error });
     }
+  },
+  otploginChecker:async (req,res)=>{
+    try{
+      const Email = req.session.email
+      const user = await Schema.findOne({ email: Email })
+      let product = await product1.find()
+        let banner =   await bannerSchema.find()
+      const oldOtp = parseInt(req.body.otp);
+      const categorie = await category.find();
+      const subcategory = await Subcategory.find()
+      let id = req.query.q;
+      if (oldOtp === otp1) {
+        res.render("users/index", { categorie,subcategory , product,banner});
+      } else {
+        
+        const error = "This is invalid";
+        res.render("users/otplogin", { error });
+      }
+    }catch(err){
+      console.log(err)
+    }
+
   },
   productAdder: async (req, res) => {
     try{
@@ -138,8 +166,9 @@ module.exports = {
   cartAdder: async (req, res) => {
     try{
     let userEmail = req.session.email;
-    const categorie = await category.find();
     let Id = req.query.q;
+    const categorie = await category.find();
+   
     let user = await Schema.findOne({
       email: req.session.email,
       cart: { $elemMatch: { product: Id } },
@@ -152,7 +181,7 @@ module.exports = {
     if (user) {
       await Schema.updateOne(
         { email: req.session.email, cart: { $elemMatch: { product: Id } } },
-        { $inc: { "cart.$.quantity": 1 } }
+        { $set: { "cart.$.quantity": 1 } }
       );
       res.render("users/cart", { categorie, userCart,banner });
     } else {
@@ -305,6 +334,21 @@ module.exports = {
       res.render("users/otp", { user, error });
     }
   },
+  resendOtpLogin:async(req,res)=>{
+    try {
+      let email = req.session.email;
+      let user = await Schema.findOne({ email: email });
+
+      const otp = eoverify.sendOtp(email);
+      otp1 = otp.otp;
+      console.log(otp1);
+      res.render("users/otp", { user });
+    } catch (err) {
+      const error = "This is invalid";
+      res.render("users/otplogin", { user, error });
+    }
+  }
+  ,
   orderDetails: async (req, res) => {
     try {
       const userEmail = req.session.email;
