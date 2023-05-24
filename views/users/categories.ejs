@@ -49,7 +49,11 @@
 <%  categorie.forEach((x)=>{ %>
 <li><a href="categories?q=<%=x.category%>"><%= x.category %></a></li>
 <%})%>
-<li><a href="/logout">logout</a></li>
+<% if(logginChecker==true){%>
+    <li><a href="/logout">Logout</a></li>
+    <%}else{%>
+        <li><a href="/loginPage">Login</a></li>
+        <%}%>
 
 </ul>
 </nav>
@@ -65,7 +69,7 @@
 </div>
 </li>
 <li> <a href="accountView"><span class="flaticon-user"></span></a></li>
-<li class="cart"><a href="cart"><span class="flaticon-shopping-cart"></span></a> </li>
+<li class="cart" data-count="<%=cartCount%>"><a href="cart"><span class="flaticon-shopping-cart"></span></a>
 </ul>
 </div>
 </div>
@@ -143,10 +147,26 @@
 </div>
 </div>
 </div>
+<div class="select-Categories pb-30">
+<div class="select-job-items2 mb-30">
+<div class="col-xl-12">
+    <form action="priceChange" method="post">
+<select id="subcategorieId" name="Price" required>
+<option   value="1">Lower to Higher</option>
+<option   value="-1">Higer to Lower</option>
+
+
+</select>
+<button  type="submit" class="btn">Sort</button>
+</form>
+</div>
+</div>
+</div>
 </div>
 </div>
 
 </div>
+
 
 
 <div class="col-xl-9 col-lg-8 col-md-8">
@@ -160,9 +180,6 @@
 <div class="properties-img">
 <a href="pro-details?q=<%=product._id%>"><img src="image/products/<%=product.images[0]%>" alt=""></a>
 <div class="socal_icon">
-<a href="#"><i class="ti-shopping-cart"></i></a>
-<a href="#"><i class="ti-heart"></i></a>
-<a href="#"><i class="ti-zoom-in"></i></a>
 </div>
 </div>
 <div class="properties-caption properties-caption2">

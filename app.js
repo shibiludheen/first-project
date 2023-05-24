@@ -22,6 +22,10 @@ app.use(express.urlencoded({extended:false}))
 app.use(nocache())
 app.use('/',userRouter)
 app.use('/',adminRouter)
+app.use(function(req, res) {
+    res.status(404);
+    res.render('users/errorPage' );
+  });
 
 
 

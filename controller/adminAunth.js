@@ -1,12 +1,12 @@
 module.exports = {
-    checkUser:(req,res,next)=>{
-        const loggingStatus = req.session.loggedin
+    checkAdmin:(req,res,next)=>{
+        const loggingStatus = req.session.adminloggedin
         console.log(loggingStatus)
         if(loggingStatus == true){
          
             next()
         }else{
-            res.render('users/login')
+            res.render('admin/signin')
         }
 
     }

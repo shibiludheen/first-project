@@ -1195,7 +1195,7 @@ hr {
   -o-transition: all 0.4s ease-out 0s;
   transition: all 0.4s ease-out 0s;
   position: absolute;
-  content: "1";
+  content: attr(data-count);
   background: #ff2020;
   color: #fff;
   text-align: center;

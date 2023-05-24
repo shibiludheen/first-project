@@ -47,6 +47,10 @@ const User= mongoose.model('Users',new mongoose.Schema({
         type:Boolean,
         default:false,
     },
+    loginStatus:{
+        type:Boolean,
+        default:false,
+    },
     last_login:{
         type:Date,
         

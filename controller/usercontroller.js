@@ -12,7 +12,8 @@ const { OrderedBulkOperation } = require("mongodb");
 const  coupenSchema = require("../models/coupen")
 const Subcategory = require("../models/subcategorie-schema");
 const { response } = require("express");
-
+const { isDefined } = require("razorpay/dist/utils/razorpay-utils");
+ 
 let otp1 = undefined;
 const couponStore={
   id:undefined,
@@ -23,6 +24,8 @@ var instance = new Razorpay({
   key_id: "rzp_test_8emA6zzli6nGP1",
   key_secret: "O4RlOXRxnLAX8IaXM3ifqFZZ", 
 });
+let  NewPasswordEmail=undefined
+let cartCount = undefined
 module.exports = {
   adding: async (req, res) => {
     try {
@@ -59,7 +62,15 @@ module.exports = {
         res.render("users/signup", { error });
       }
     }
-  },
+  },loginPageView:async(req,res)=>{
+    try{
+      res.render('users/login')
+
+    }catch(err){
+      res.render('users/errorPage')
+    }
+  }
+  ,
   otpChecker: async (req, res) => {
     try{
     const oldOtp = parseInt(req.body.otp);
@@ -106,7 +117,7 @@ module.exports = {
         let product = await product1.find()
         let banner =   await bannerSchema.find()
 
-        res.render("users/otplogin", {user, categorie, userCart ,subcategory , product,banner});
+        res.render("users/otplogin", {user, categorie, userCart ,subcategory ,cartCount, product,banner});
        
       } else {
         const error = "You have enterd the wrong password or email";
@@ -119,6 +130,8 @@ module.exports = {
   },
   otploginChecker:async (req,res)=>{
     try{
+      const logginChecker = req.session.loggedin
+      console.log(logginChecker)
       const Email = req.session.email
       const user = await Schema.findOne({ email: Email })
       let product = await product1.find()
@@ -128,7 +141,7 @@ module.exports = {
       const subcategory = await Subcategory.find()
       let id = req.query.q;
       if (oldOtp === otp1) {
-        res.render("users/index", { categorie,subcategory , product,banner});
+        res.render("users/index", { logginChecker,categorie,subcategory ,cartCount, product,banner});
       } else {
         
         const error = "This is invalid";
@@ -141,36 +154,39 @@ module.exports = {
   },
   productAdder: async (req, res) => {
     try{
+      const logginChecker = req.session.loggedin
     const orginalCategory = req.query.q
     const subcategory = await Subcategory.find()
     const product = await product1.find({catogery:orginalCategory});
     const categorie = await category.find();
     let banner =   await bannerSchema.find()
-    res.render("users/categories", { product, categorie ,subcategory,banner,orginalCategory});
+    res.render("users/categories", { product,logginChecker, categorie ,cartCount,subcategory,banner,orginalCategory});
     }catch(err){
       res.render('users/errorPage')
     }
   },
   productViewer: async (req, res) => {
     try{
+      const logginChecker = req.session.loggedin
     const product = await product1.findOne({ _id: req.query.q });
     const subcategory = await Subcategory.find()
     const userEmail = req.session.email;
     let banner =   await bannerSchema.find()
     const categorie = await category.find();
-    res.render("users/pro-details", { product, categorie , subcategory,banner });
+    res.render("users/pro-details", { product,logginChecker, categorie ,cartCount, subcategory,banner });
     }catch(err){
       res.render('users/errorPage')
     }
   },
   cartAdder: async (req, res) => {
     try{
+      const logginChecker = req.session.loggedin
     let userEmail = req.session.email;
     let Id = req.query.q;
     const categorie = await category.find();
    
     let user = await Schema.findOne({
-      email: req.session.email,
+      email: userEmail,
       cart: { $elemMatch: { product: Id } },
     });
     let userCart = await Schema.findOne({ email: userEmail }).populate({
@@ -183,20 +199,22 @@ module.exports = {
         { email: req.session.email, cart: { $elemMatch: { product: Id } } },
         { $set: { "cart.$.quantity": 1 } }
       );
-      res.render("users/cart", { categorie, userCart,banner });
+      res.json({added:true})
     } else {
+      res.json({err:'you are not user'});
       await Schema.updateOne(
         { email: req.session.email },
         { $addToSet: { cart: { product: ObjectId(Id) } } }
       );
-      res.render("users/cart", { categorie, userCart ,banner});
+      res.render("users/cart", { logginChecker, categorie, cartCount,userCart ,banner});
     }
   }catch(err){
     res.render('users/errorPage')
   }
   },
   showCart: async (req, res) => {
-    try{
+    try{ 
+      const logginChecker = req.session.loggedin
     let userEmail = req.session.email;
     const categorie = await category.find();
     let banner =   await bannerSchema.find()
@@ -209,15 +227,18 @@ module.exports = {
   
     
 
-    res.render("users/cart", { userCart, categorie ,banner});
+    res.render("users/cart", { logginChecker,userCart, cartCount,categorie ,banner});
   }catch(err){
     res.render('users/errorPage')
   }
   },
   sessionHandeler: async (req, res) => {
     try{
+      const logginChecker = req.session.loggedin
     const categorie = await category.find();
     const subcategory = await Subcategory.find()
+    let product = await product1.find()
+    let banner =   await bannerSchema.find()
     const userEmail = req.session.email;
     let userCart = await Schema.findOne({ email: userEmail }).populate({
       path: "cart.product",
@@ -225,11 +246,10 @@ module.exports = {
     });
 
     if (req.session.loggedin) {
-      let product = await product1.find()
-      let banner =   await bannerSchema.find()
-      res.render("users/index", { categorie, userCart , subcategory,product,banner });
+     
+      res.render("users/index", { logginChecker, categorie, userCart ,cartCount, subcategory,product,banner });
     } else {
-      res.render("users/login");                  
+      res.render("users/index",{ logginChecker, categorie, userCart ,cartCount, subcategory,product,banner });                  
     }
   }catch(err){
     res.render('users/errorPage')
@@ -242,7 +262,7 @@ module.exports = {
     let product = await Schema.updateOne(
       { email: user, "cart.product": productId },
       { $inc: { "cart.$.quantity": 1 } }
-    );
+    );      
     let productSchema = await product1.updateOne(
       { _id: productId },
       { $inc: { stocks: -1 } }
@@ -303,6 +323,7 @@ module.exports = {
   },
   checkoutProductViewer: async (req, res) => {
     try {
+      const logginChecker = req.session.loggedin
       let userEmail = req.session.email;
       const categorie = await category.find();
       const subcategory = await Subcategory.find()
@@ -315,7 +336,7 @@ module.exports = {
         return acc;
       }, 0);
       let banner =   await bannerSchema.find()
-      res.render("users/checkout", { userCart, subTotal, categorie,subcategory,banner });
+      res.render("users/checkout", {logginChecker, userCart, subTotal, cartCount,categorie,subcategory,banner });
     } catch (err) {
       res.render('users/errorPage')
     }
@@ -330,7 +351,7 @@ module.exports = {
       console.log(otp1);
       res.render("users/otp", { user });
     } catch (err) {
-      const error = "This is invalid";
+      const error = "This  otp is invalid";
       res.render("users/otp", { user, error });
     }
   },
@@ -344,14 +365,28 @@ module.exports = {
       console.log(otp1);
       res.render("users/otp", { user });
     } catch (err) {
-      const error = "This is invalid";
+      const error = "This otp is invalid";
       res.render("users/otplogin", { user, error });
+    }
+  },forgotPasswordResendOtp:async(req,res)=>{
+
+    try {
+      
+
+      const otp = eoverify.sendOtp( NewPasswordEmail);
+      otp1 = otp.otp;
+      console.log(otp1);
+      res.render("users/forgotPasswordEmailOtp");
+    } catch (err) {
+      const error = "This otp is invalid";
+      res.render("users/forgotPasswordEmailOtp", {  error });
     }
   }
   ,
   orderDetails: async (req, res) => {
     try {
       const userEmail = req.session.email;
+       const logginChecker = req.session.loggedin
       let userCart = await Schema.findOne({ email: userEmail }).populate({
         path: "cart.product",
         model: "prodect",
@@ -365,6 +400,7 @@ module.exports = {
         acc = curr.quantity * curr.product.price + acc;
         return acc;
       }, 0);
+      const products = [...userCart.cart]
       const paymentOption = req.query.paymentOption;
       const billingAdress = req.query.Adress;
       console.log(billingAdress)
@@ -424,7 +460,9 @@ couponid=undefined
        }
        
        if(paymentOption=="COD"||paymentOption=="ONLINE"){
+        console.log(products)
       const newOrder = await orderSchema.create({
+        products,
         paymentOption,
         billingAdress,
         date,
@@ -447,11 +485,14 @@ couponid=undefined
           if (err) console.log(err);
 
           res.json({ methode: "online", order: order });
+         
         });
+        await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
       } else if(paymentOption=="COD") {
         req.session.order = newOrder._id;
        
        res.json({methode:"COD"})
+       await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
       }else{
         userEmail:req.session.email
         await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
@@ -495,7 +536,7 @@ couponid=undefined
   accountView: async (req, res) => {
       try{
         const userEmail = req.session.email;
-
+        const logginChecker = req.session.loggedin
         let user = await Schema.findOne({ email: userEmail }).populate({
           path: "cart.product",
           model: "prodect",
@@ -506,7 +547,7 @@ couponid=undefined
         let order = await orderSchema.findOne({ user: userid }).sort({date:-1});
   
       
-        res.render("users/account", { user, categorie, order ,banner});
+        res.render("users/account", { logginChecker ,user, cartCount,categorie, order ,banner});
       } catch (err) {
         res.render('users/errorPage')
            }
@@ -547,6 +588,7 @@ couponid=undefined
   },
   searching: async (req, res) => {
     try {
+      const logginChecker = req.session.loggedin
       const searchText = req.body.search;
       const categorie = await category.find();
 
@@ -554,21 +596,38 @@ couponid=undefined
         productName: { $regex: searchText, $options: "i" },
       });
       let banner =   await bannerSchema.find()
-      res.render("users/search", { product, categorie ,banner});
+      res.render("users/search", {logginChecker, product, cartCount,categorie ,banner});
     } catch (err) {
       res.render('users/errorPage')
     }
   },categoryChange: async(req,res)=>{
     try{
+      const logginChecker = req.session.loggedin
      const body  = req.body.category
      const categorie = await category.find();
       const product = await product1.find({type: { $regex: body, $options: "i" }});
       let banner =   await bannerSchema.find()
-      res.render("users/categorychange", { product, categorie,banner });
+      res.render("users/categorychange", { logginChecker,product, cartCount,categorie,banner });
     }catch(err){
       res.render('users/errorPage')
     }
    
+  },priceCategoryChange:async(req,res)=>{
+    try{
+      const categories = req.query.q
+    const price =parseInt( req.body.Price)
+    
+    
+    const logginChecker = req.session.loggedin
+
+    const categorie = await category.find();
+    const  product   =  await product1.find().sort({price:price})
+    let banner =   await bannerSchema.find()
+      res.render("users/categorychange", { logginChecker,product, cartCount,categorie,banner });
+
+    }catch(err){
+     console.log(err)
+    }
   },
   orderReturn:async(req,res)=>{
     try{
@@ -635,14 +694,110 @@ couponid=undefined
 },
 orderHistoryShow:async(req,res)=>{
   try{
+    const logginChecker = req.session.loggedin
     const userid = req.query.q
     const categorie = await category.find();
      let banner =   await bannerSchema.find()
       let order = await orderSchema.find({ user: userid });
-    res.render('users/orderHistoryPage',{order,banner,categorie})
+    res.render('users/orderHistoryPage',{logginChecker,order,cartCount, banner,categorie})
 
   }catch(err){
     console.log(err)
   }
+},
+   cartCountChecker:async(req,res,next)=>{
+    try{
+      if(req.session.loggedin){
+      userEmail =req.session.email 
+      let userCart = await Schema.findOne({ email: userEmail }).populate({
+        path: "cart.product",
+        model: "prodect",
+     
+      })
+      
+      cartCount = userCart.cart.length
+    
+      
+    }else{
+      cartCount = 0
+    }
+    next()
+    }catch(err){
+      res.render('users/errorPage')
+    }
+   },forgotPasswordEmailPageShow:async(req,res)=>{
+    try{
+      res.render('users/forgotEmailVerify')
+    }catch(err){
+      console.log(err)
+    }
+
+   },forgotPasswordEmailVerify:async(req,res)=>{
+    try{
+      const email = req.body.email
+      console.log(email)
+    const user =   await Schema.findOne({email:email})
+   const error = 'This email not found'
+   
+if (user === null) {
+  res.render('users/forgotEmailVerify',{error})
+} else {
+  const otp = eoverify.sendOtp(email);
+   NewPasswordEmail=email
+  otp1 = otp.otp;
+  console.log(otp);
+  res.render('users/forgotPasswordEmailOtp')
 }
+    }catch(err){
+    console.log(err)
+    }
+   },forgotPasswordEmailOtpVerify:async(req,res)=>{
+    try{
+      const oldOtp = parseInt(req.body.otp);
+      if (oldOtp === otp1) {
+        res.render("users/forgotPage");
+      } else {
+        
+        const error = "This is invalid";
+        res.render("users/forgotpasswordEmailOtp", { error });
+      }
+    }catch(err){
+      console.log(err)
+    }
+    
+   },NewPasswordChange:async(req,res)=>{
+    try{
+      const NewPassword  =req.body.NewPassword
+      const ConfirmPassword = req.body.Confirmpassword
+     const  error = "Your new password and confirm password not same"
+      if(NewPassword==ConfirmPassword){
+       await  Schema.findOneAndUpdate({email: NewPasswordEmail},{$set:{password:NewPassword}})
+       await  Schema.findOneAndUpdate({email: NewPasswordEmail},{$set:{confirm_password:NewPassword}})
+       res.render('users/login')
+     }else{
+        res.render('users/forgotPage',{error})
+      }
+    }catch(err){
+      res.render('users/errorPage')
+    }
+   },
+   showOrderProductDetail:async(req,res)=>{
+    try{
+    const  id = req.query.q
+    console.log(id)
+    const logginChecker = req.session.loggedin
+    const subcategory = await Subcategory.find()
+    const categorie = await category.find();
+    let banner =   await bannerSchema.find()
+     const productDetails=  await  orderSchema.findOne({_id:id}).populate({path:"products.product",model:"prodect"})
+     console.log(productDetails)
+        res.render('users/orderDetailProductPage',{ productDetails,logginChecker, categorie ,cartCount,subcategory,banner})
+    }catch(err){
+      console.log(err)
+
+    }
+
+   }
+
+
 }

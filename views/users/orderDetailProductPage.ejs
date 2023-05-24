@@ -40,7 +40,6 @@
 
     <header>
         <div class="header-area">
-            
             <div class="header-mid header-sticky">
                 <div class="container">
                     <div class="menu-wrapper">
@@ -50,18 +49,15 @@
                         <div class="main-menu d-none d-lg-block">
                             <nav>
                                 <ul id="navigation">
-
-
-
-                                    <%  categorie.forEach((x)=>{ %>
-    <li><a href="categories?q=<%=x.category%>"><%= x.category %></a></li>
-<%})%>
-<% if(logginChecker==true){%>
-    <li><a href="/logout">Logout</a></li>
-    <%}else{%>
-        <li><a href="/loginPage">Login</a></li>
-        <%}%>
-                                           
+                                    <% categorie.forEach((x)=>{ %>
+                                        <li><a href="categories?q=<%=x.category%>"><%= x.category %></a></li>
+                                        <%})%>
+                                        <% if(logginChecker==true){%>
+                                            <li><a href="/logout">Logout</a></li>
+                                            <%}else{%>
+                                                <li><a href="/loginPage">Login</a></li>
+                                                <%}%>
+                                            
                                 </ul>
                             </nav>
                         </div>
@@ -83,150 +79,59 @@
                     </div>
 
                     <div class="search_input" id="search_input_box">
-<form class="search-inner d-flex justify-content-between " method="post"  action="search">
-<input type="text" class="form-control" id="search_input" name="search" placeholder="Search Here">
-<button type="submit" class="btn"></button>
-<span class="ti-close" id="close_search" title="Close Search"></span>
-</form>
-</div>
+                        <form class="search-inner d-flex justify-content-between " method="post"  action="search">
+                        <input type="text" class="form-control" id="search_input" name="search" placeholder="Search Here">
+                        <button type="submit" class="btn"></button>
+                        <span class="ti-close" id="close_search" title="Close Search"></span>
+                        </form>
+                        </div>
 
                     <div class="col-12">
                         <div class="mobile_menu d-block d-lg-none"></div>
                     </div>
                 </div>
             </div>
-            <%banner.forEach((element)=>{%>
-                <%if(element.isActive==true){%>
-            <div class="header-bottom text-center">
-                <p><%=element.description%><a href="categories?q=men" class="browse-btn">Shop
-                        Now</a></p>
-            </div>
-            <%}else{%>
-                <div class="header-bottom text-center" hidden>
-                <p hidden><a href="categories" class="browse-btn" hidden>Shop
-                        Now</a></p>
-            </div>
-                <%}%>
-            <%})%>
+           
         </div>
     </header>
     <main>
 
-        <div class="hero-area section-bg2">
-            <div class="container">
-                <div class="row">
-                    <div class="col-xl-12">
-                        <div class="slider-area">
-                            <div class="slider-height2 slider-bg4 d-flex align-items-center justify-content-center">
-                                <div class="hero-caption hero-caption2">
-                                    <h2>Cart</h2>
-                                    <nav aria-label="breadcrumb">
-                                        <ol class="breadcrumb justify-content-center">
-                                            <li class="breadcrumb-item"><a href="index-2">Home</a></li>
-                                            <li class="breadcrumb-item"><a href="#">Cart</a></li>
-                                        </ol>
-                                    </nav>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+     
 
 
         <section class="cart_area">
             <div class="container">
                 <div class="cart_inner">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                               
-                                    <%if(userCart.cart.length==0){%>
-                                        <th scope="col">Your cart is empty</th>
-                                        <%}else{%>
-                                        <th scope="col">Product</th>
-                                    <th scope="col">Price</th>
-                                    <th scope="col">Quantity</th>
-                                    <th scope="col">Total </th>
-                                    <th scope="col">Edit</th> 
-                                            <%}%>
+                    <div class="col-xl-9 col-lg-8 col-md-8">
+                        <div class="latest-items latest-items2">
+                        <div class="row">
+                        <% productDetails.products.forEach(function(product){%>
+                            <%if(product.product.status==true) {%>
+        
+                        <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6">
+                        <div class="properties pb-30">
+                        <div class="properties-card">
+                        <div class="properties-img">
+                        <a href="pro-details?q=<%=product.product._id%>"><img src="image/products/<%=product.product.images[0]%>" alt=""></a>
+                        <div class="socal_icon">
 
-                                </tr>
-                            </thead>
+                        </div>
+                        </div>
+                        <div class="properties-caption properties-caption2">
+                        <h3><a href="pro-details?q=<%=product.product._id%>"><%=product.product.productName %></a></h3>
+                        <div class="properties-footer">
+                        <div class="price">
+                        <span>₹<%=product.product.price%></span>
+                        </div>
+                        <span>Product quantity :<%=product.quantity%></span>
+                        </div>
+                        </div>
+                        </div>
+                        </div>
+                        </div>
+                        <%}%>
+                        <%})%>
 
-
-
-                            <tbody>
-                                <%userCart.cart.forEach((x)=>{%>
-
-                                    <tr>
-
-                                        <td>
-                                            <div class="media">
-                                                <div class="d-flex">
-                                                    <img src="assets/image/products" alt="" />
-                                                </div>
-                                                <div class="media-body">
-                                                    <p>
-                                                        <%=x.product.productName%>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <h5>
-                                                ₹<%=x.product.price %>
-                                            </h5>
-                                        </td>
-                                        <td>
-                                            <button style="color: #000;" onclick="increament('<%=x.product._id%>','<%=x.product.price%>')"
-                                                style="border:none">+</button>
-                                            <a id="quantiy_<%=x.product._id%>">
-                                                <%=x.quantity%>
-                                            </a> <button style="color: #000;" style="border:none" class="text-dark" onclick="decreament('<%=x.product._id%>','<%=x.product.price%>','<%=x._id%>')">-</button>
-                                        </td>
-                                        <td>
-                                            <h5 id="totalPrice_<%=x.product._id%>">
-                                                ₹<%=x.quantity*x.product.price%>
-                                            </h5>
-                                        </td>
-                                        <td>
-                                            <h5>
-                                                <a class="btn" href="deleteCart?q=<%=x._id%>">Remove item</a>
-                                            </h5>
-                                        </td>
-                                    </tr>
-                                    <%})%>
-
-                            </tbody>
-                        </table>
-                        <!-- <tr>
-<td>
-<div class="media">
-<div class="d-flex">
-<img src="assets/img/gallery/best_selling1.html" alt="" />
-</div>
-<div class="media-body">
-<p>Minimalistic shop for multipurpose use</p>
-</div>
-</div>
-</td>
-<td>
-<h5>$360.00</h5>
-</td>
-<td>
-<div class="product_count">
-<span class="input-number-decrement"> <i class="ti-minus"></i></span>
-<input class="input-number2" type="text" value="" min="0" max="10">
-<span class="input-number-increment"> <i class="ti-plus"></i></span>
-</div>
-</td>
-<td>
-<h5>$720.00</h5>
-</td>
-</tr> -->
                         <!-- <tr class="bottom_button">
 <td>
 <a class="btn" href="#">Update Cart</a>
@@ -294,16 +199,6 @@ Calculate Shipping
 </div>
 </td>
 </tr> -->
-
-
-                        <div class="checkout_btn_inner float-right">
-                            <a class="btn" href="categories?q=men">Continue Shopping</a>
-                            <%if(userCart.cart.length==0){%>
-                            <a class="btn checkout_btn" href="checkout" hidden>Proceed to checkout</a>
-                            <%}else{%>
-                                <a class="btn checkout_btn" href="checkout" >Proceed to checkout</a>
-                                <%}%>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -463,6 +358,27 @@ Calculate Shipping
     <script src="assets/js/plugins.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        async function addCart(event,id){
+      try{
+       event.preventDefault()
+      let res=await fetch(`/cartAdding?q=${id}`,{method:'POST'})
+      let data=await res.json();
+      console.log(data);
+      if(data.added){
+       const click=await Swal.fire({
+                     icon: 'success',
+                     title: 'added to cart',
+                     timer: 2000,
+                     showConfirmButton: false
+                     // text: "your order placed please continue shoping"
+                   })
+      }}
+      catch(err){
+        console.log(err)
+      }
+     } 
+        </script>
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
     <script>
@@ -475,7 +391,6 @@ Calculate Shipping
     function increament(id,price){
         const qtyValue = document.getElementById(`quantiy_${id}`);
         const totalValue = document.getElementById(`totalPrice_${id}`);
-        if(qtyValue.innerHTML<=9){
     
         fetch(`plus?q=${id}`)
         .then((res)=>{
@@ -491,17 +406,6 @@ Calculate Shipping
         .catch((err)=>{
            location.href = '/'
         })
-    }else{
-        Swal.fire({
-        title: 'Are you sure?',
-          text: `This is out off limit${name}`,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-        })
-    
-    }
     }
     
     function decreament(id,price,deleId){

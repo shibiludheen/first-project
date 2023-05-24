@@ -52,8 +52,12 @@
                                     <% categorie.forEach((x)=>{ %>
                                         <li><a href="categories?q=<%=x.category%>"><%= x.category %></a></li>
                                         <%})%>
-                                        <li><a href="/logout">Logout</a></li>
-                                            <li><a href="contact">Contact</a></li>
+                                        <% if(logginChecker==true){%>
+                                            <li><a href="/logout">Logout</a></li>
+                                            <%}else{%>
+                                                <li><a href="/loginPage">Login</a></li>
+                                                <%}%>
+                                            
                                 </ul>
                             </nav>
                         </div>
@@ -68,7 +72,7 @@
                                     </div>
                                 </li>
                                 <li> <a href="accountView"><span class="flaticon-user"></span></a></li>
-                                <li class="cart"><a href="cart"><span class="flaticon-shopping-cart"></span></a>
+                                <li class="cart" data-count="<%=cartCount%>"><a href="cart"><span class="flaticon-shopping-cart"></span></a>
                                 </li>
                             </ul>
                         </div>
@@ -110,9 +114,7 @@
                         <div class="properties-img">
                         <a href="pro-details?q=<%=product._id%>"><img src="image/products/<%=product.images[0]%>" alt=""></a>
                         <div class="socal_icon">
-                        <a href="#"><i class="ti-shopping-cart"></i></a>
-                        <a href="#"><i class="ti-heart"></i></a>
-                        <a href="#"><i class="ti-zoom-in"></i></a>
+
                         </div>
                         </div>
                         <div class="properties-caption properties-caption2">
@@ -358,6 +360,27 @@ Calculate Shipping
     <script src="assets/js/plugins.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        async function addCart(event,id){
+      try{
+       event.preventDefault()
+      let res=await fetch(`/cartAdding?q=${id}`,{method:'POST'})
+      let data=await res.json();
+      console.log(data);
+      if(data.added){
+       const click=await Swal.fire({
+                     icon: 'success',
+                     title: 'added to cart',
+                     timer: 2000,
+                     showConfirmButton: false
+                     // text: "your order placed please continue shoping"
+                   })
+      }}
+      catch(err){
+        console.log(err)
+      }
+     } 
+        </script>
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
     <script>
