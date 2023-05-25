@@ -248,7 +248,12 @@
                                               <p class="text-muted mt-1 mb-0 small ms-xl-5">Product return has been requested</p>
                                             
                                             </div>
-                                            <%}else{%>
+                                            <%}else if(order.orderStatus=="orderCancelled"){%>
+                                              <div class="d-flex justify-content-around mb-1">
+                                                <p class="text-muted mt-1 mb-0 small ms-xl-5">Order has been cancelled</p>
+                        
+                                              </div>
+                                              <%}else{%>
                                               <div class="d-flex justify-content-around mb-1">
                                               <p class="text-muted mt-1 mb-0 small ms-xl-5">Order placed</p>
                                               <p class="text-muted mt-1 mb-0 small ms-xl-5">Shipped</p>
@@ -319,7 +324,7 @@
                             <%}%>
 
                           <form action="deleteOrder?q=<%=order._id%>" method="post">
-                            <% if(order.delivery=="delivered" ||order.delivery=="Out for delivery" ){ %>
+                            <% if(order.delivery=="delivered" ||order.delivery=="Out for delivery"||order.orderStatus=="orderCancelled" ){ %>
                               <button hidden type="submit" class="btn btn-outline-primary ms-1"> CANCEL ORDER</button>
                               <%}else{%>
                                 <button type="submit" class="btn btn-outline-primary ms-1"> CANCEL ORDER</button>
