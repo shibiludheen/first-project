@@ -178,7 +178,7 @@ module.exports = {
       }
     }
     }catch(err){
-      console.log(err)
+     res.render('users/errorPage')
     }
 
   },
@@ -452,14 +452,13 @@ module.exports = {
       const products = [...userCart.cart]
       const paymentOption = req.query.paymentOption;
       const billingAdress = req.query.Adress;
-      console.log(billingAdress)
       const wallet  = req.query.wallet
       let couponid = req.query.coupenid
       let coupon=null
       const user = userCart._id;
       const date = Date.now();
       if(couponStore.id==couponid){
-         console.log(totelAmount)
+        
         let actualPrice = parseFloat(totelAmount)
         let discountPercentage = parseFloat(couponStore.discount)
         let maxAmount = parseFloat(couponStore.maxAmount)
@@ -473,7 +472,7 @@ module.exports = {
         if(discount>maxDiscount){
            totelAmount = parseInt(maxDiscount)
         }
-        console.log(totelAmount)
+       
        
 coupon=couponid
 couponStore.id=undefined
@@ -508,8 +507,17 @@ couponid=undefined
        }
        }
        
+       
+
+      
+       
        if(paymentOption=="COD"||paymentOption=="ONLINE"){
-        console.log(products)
+        console.log(billingAdress)
+        if(billingAdress==="null"){
+          console.log('this billing adress is null')
+          res.json({method:"Adress_is_null"})
+  
+         }else{
       const newOrder = await orderSchema.create({
         products,
         paymentOption,
@@ -523,6 +531,7 @@ couponid=undefined
         await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
          res.json({allAmountWallet:true})
       }else{
+        
       if (paymentOption == "ONLINE") {
         var options = {
           amount: totelAmount*100,
@@ -549,8 +558,10 @@ couponid=undefined
 
     
   }
+}
     }
-     
+ 
+  
 
     } catch (err) {
       res.render('users/errorPage')
@@ -654,9 +665,10 @@ couponid=undefined
       const logginChecker = req.session.loggedin
      const body  = req.body.category
      const categorie = await category.find();
+     const subcategory   =  await Subcategory.find()
       const product = await product1.find({type: { $regex: body, $options: "i" }});
       let banner =   await bannerSchema.find()
-      res.render("users/categorychange", { logginChecker,product, cartCount,categorie,banner });
+      res.render("users/categorychange", { logginChecker,product,subcategory  , cartCount,categorie,banner });
     }catch(err){
       res.render('users/errorPage')
     }
@@ -672,7 +684,9 @@ couponid=undefined
     const categorie = await category.find();
     const  product   =  await product1.find().sort({price:price})
     let banner =   await bannerSchema.find()
-      res.render("users/categorychange", { logginChecker,product, cartCount,categorie,banner });
+    const subcategory   =  await Subcategory.find()
+
+      res.render("users/categorychange", { logginChecker,product ,subcategory   , cartCount,categorie,banner });
 
     }catch(err){
      console.log(err)

@@ -498,6 +498,16 @@
         
 
       }
+      if(result.method=="Adress_is_null"){
+        const click=await Swal.fire({
+                     icon: 'error',
+                     title: 'failed',
+                     text: `Adress not added`,
+                     timer: 2000,
+                     showConfirmButton: false
+                     // text: "your order placed please continue shoping"
+                   })
+      }
     
       function razorpay(order) {
       
