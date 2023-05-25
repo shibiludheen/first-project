@@ -79,7 +79,7 @@ module.exports = {
     let id = req.query.q;
     if (oldOtp === otp1) {
       await Schema.findByIdAndUpdate({ _id: id }, { $set: { status: true } });
-      res.redirect("/");
+      res.render('users/login');
     } else {
       const user = await Schema.findOne({ _id: id });
       const error = "This is invalid";
