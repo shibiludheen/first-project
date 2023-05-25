@@ -109,12 +109,11 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th class="col">paymentOption</th>
-                  <th class="col">paymentment</th>
-                  <th class="col">date</th>
-                  <th class="col">status</th>
-                  <th class="col"> price</th>
-                  <th class="col">paid</th>
+                  <th class="col">PaymentOption</th>
+                  <th class="col">Payment</th>
+                  <th class="col">Date</th>
+                  <th class="col">Status</th>
+                  <th class="col"> Price</th>
                 </tr>
               </thead>
               <tbody>
@@ -156,6 +155,12 @@
 
                       </div>
                       <%}%>
+                      <%if(x.orderStatus=="orderCancelled"){%>
+                      <div class="d-flex justify-content-around mb-1">
+                        <p class="text-muted mt-1 mb-0 small ms-xl-5">Order has been cancelled</p>
+
+                      </div>
+                      <%}%>
                   </td>
                   <td>
                     <form action="showProductDetails?q=<%=x._id%>" method="post">
@@ -175,7 +180,7 @@
                   </td>
                   <td>
                     <form action="deleteOrder?q=<%=x._id%>" method="post">
-                      <% if(x.delivery=="delivered" ||x.delivery=="Out for delivery" ){ %>
+                      <% if(x.delivery=="delivered" ||x.delivery=="Out for delivery" ||x.orderStatus=="orderCancelled"){ %>
                         <button hidden type="submit" class="btn btn-outline-primary ms-1 "> CANCEL ORDER</button>
                         <%}else{%>
                           <button type="submit" class="btn btn-outline-primary ms-1"> CANCEL ORDER</button>

@@ -29,8 +29,12 @@ let cartCount = undefined
 module.exports = {
   adding: async (req, res) => {
     try {
-      const { full_name, email, password, confirm_password, Phone } = req.body;
+      if(req.session.loggedin){
+        res.redirect('back')
+      
 
+    }else{
+      const { full_name, email, password, confirm_password, Phone } = req.body;
       const user = await Schema.create({
         full_name,
         email,
@@ -50,6 +54,8 @@ module.exports = {
         const err = "confirm password and password not same";
         res.render("users/signup", { err });
       }
+      
+    }
     } catch (err) {
       if (
         err.message ==
@@ -64,7 +70,11 @@ module.exports = {
     }
   },loginPageView:async(req,res)=>{
     try{
+      if(req.session.loggedin){
+        res.redirect('/')
+      }else{
       res.render('users/login')
+      }
 
     }catch(err){
       res.render('users/errorPage')
@@ -73,6 +83,9 @@ module.exports = {
   ,
   otpChecker: async (req, res) => {
     try{
+      if(req.session.loggedin){
+        res.redirect('/')
+      }else{
     const oldOtp = parseInt(req.body.otp);
     const categorie = await category.find();
     const subcategory = await Subcategory.find()
@@ -85,12 +98,16 @@ module.exports = {
       const error = "This is invalid";
       res.render("users/otp", { user, error });
     }
+  }
   }catch(err){
     res.render('users/errorPage')
   }
   },
   loginChecker: async (req, res) => {
     try {
+      if(req.session.loggedin){
+        res.redirect('/')
+      }else{
       const Email = req.body.email;
       const Password = req.body.password;
       const users = await Schema.findOne({ email: Email });
@@ -123,6 +140,7 @@ module.exports = {
         const error = "You have enterd the wrong password or email";
         res.render("users/login", { error });
       }
+    }
     } catch (err) {
       const error = "You have enterd the wrong password or email";
       res.render("users/login", { error });
@@ -130,6 +148,16 @@ module.exports = {
   },
   otploginChecker:async (req,res)=>{
     try{
+      if(req.session.loggedin){
+        const logginChecker = req.session.loggedin
+        const Email = req.session.email
+        const user = await Schema.findOne({ email: Email })
+      let product = await product1.find()
+        let banner =   await bannerSchema.find()
+        const categorie = await category.find();
+        const subcategory = await Subcategory.find()
+        res.render("users/index", { logginChecker,categorie,subcategory ,cartCount, product,banner});
+      }else{
       const logginChecker = req.session.loggedin
       console.log(logginChecker)
       const Email = req.session.email
@@ -141,12 +169,14 @@ module.exports = {
       const subcategory = await Subcategory.find()
       let id = req.query.q;
       if (oldOtp === otp1) {
+        req.session.loggedin = true;
         res.render("users/index", { logginChecker,categorie,subcategory ,cartCount, product,banner});
       } else {
         
         const error = "This is invalid";
         res.render("users/otplogin", { error });
       }
+    }
     }catch(err){
       console.log(err)
     }
@@ -336,13 +366,23 @@ module.exports = {
         return acc;
       }, 0);
       let banner =   await bannerSchema.find()
+      console.log(userCart.cart)
+      if(userCart.cart.length===0){
+        console.log('yes')
+        res.redirect('back')
+      }else{
       res.render("users/checkout", {logginChecker, userCart, subTotal, cartCount,categorie,subcategory,banner });
+      }
+      
     } catch (err) {
       res.render('users/errorPage')
     }
   },
   resendOtp: async (req, res) => {
     try {
+      if(req.session.loggedin){
+        res.redirect('/')
+      }else{
       let email = req.session.email;
       let user = await Schema.findOne({ email: email });
 
@@ -350,6 +390,7 @@ module.exports = {
       otp1 = otp.otp;
       console.log(otp1);
       res.render("users/otp", { user });
+      }
     } catch (err) {
       const error = "This  otp is invalid";
       res.render("users/otp", { user, error });
@@ -357,6 +398,9 @@ module.exports = {
   },
   resendOtpLogin:async(req,res)=>{
     try {
+      if(req.session.loggedin){
+        res.redirect('/')
+      }
       let email = req.session.email;
       let user = await Schema.findOne({ email: email });
 
@@ -371,12 +415,17 @@ module.exports = {
   },forgotPasswordResendOtp:async(req,res)=>{
 
     try {
+      if(req.session.loggedin){
+        res.redirect('/')
+
+      }else{
       
 
       const otp = eoverify.sendOtp( NewPasswordEmail);
       otp1 = otp.otp;
       console.log(otp1);
       res.render("users/forgotPasswordEmailOtp");
+      }
     } catch (err) {
       const error = "This otp is invalid";
       res.render("users/forgotPasswordEmailOtp", {  error });
@@ -566,7 +615,7 @@ couponid=undefined
       }else{
         res.redirect('back')
       } 
-    const orderdetail = await orderSchema.findOneAndDelete({ _id: orderid });
+    const orderdetail = await orderSchema.findOneAndUpdate({ _id: orderid },{$set:{orderStatus:"orderCancelled"}});
     res.redirect("back");
   }catch(err){
     console.log(err)
@@ -793,10 +842,37 @@ if (user === null) {
      console.log(productDetails)
         res.render('users/orderDetailProductPage',{ productDetails,logginChecker, categorie ,cartCount,subcategory,banner})
     }catch(err){
-      console.log(err)
+      res.render('users/errorPage')
 
     }
 
+   },profileEditPageShow:async(req,res)=>{
+    try{
+      user = req.query.q
+      let userCart = await Schema.findOne({ _id: user }).populate({
+        path: "cart.product",
+        model: "prodect",
+     
+      })
+      res.render('users/profileEditPage',{userCart})
+    }catch(err){
+      res.render('users/errorPage')
+    }
+
+   },profileEditApply:async(req,res)=>{
+    try{
+      console.log('hai')
+     userId = req.query.q
+     console.log(userId)
+     const full_name  = req.body.full_name
+     const Phone = req.body.Phone
+ 
+       await Schema.updateOne({_id:userId},{$set:{full_name:full_name,Phone:Phone}})
+       res.redirect('/accountView')
+    }catch(err){
+      console.log(err)
+      res.render('users/errorPage')
+    }
    }
 
 

@@ -18,7 +18,7 @@ router.get('/register',(req,res)=>{
 
     res.render('users/signup')    
 })
-router.get('/loginPage',controller.loginPageView)
+router.get('/loginPage',checkUser.checkUser,controller.loginPageView)
 router.post('/sighup',controller.adding)
 router.post('/otp',controller.otpChecker)
 router.post('/otplogin',controller.otploginChecker)
@@ -59,5 +59,7 @@ router.post('/forgotEmailVerify',controller.cartCountChecker,controller.forgotPa
 router.post('/emailVerificationOtp',controller.cartCountChecker,controller.forgotPasswordEmailOtpVerify)
 router.post('/ChangePassword',controller.cartCountChecker,controller.NewPasswordChange)
 router.post('/showProductDetails',checkUser.checkUser,controller.cartCountChecker,controller.showOrderProductDetail)
+router.get('/profileEdit',checkUser.checkUser,controller.cartCountChecker,controller.profileEditPageShow)
+router.post('/ChangeProfile',checkUser.checkUser,controller.cartCountChecker,controller.profileEditApply)
 
 module.exports = router
