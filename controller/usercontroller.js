@@ -13,7 +13,7 @@ const  coupenSchema = require("../models/coupen")
 const Subcategory = require("../models/subcategorie-schema");
 const { response } = require("express");
 const { isDefined } = require("razorpay/dist/utils/razorpay-utils");
- 
+ let wallet_substracted_price = undefined
 let otp1 = undefined;
 const couponStore={
   id:undefined,
@@ -491,17 +491,21 @@ couponid=undefined
         let  wallet = userCart.wallet
         let takeWallet =undefined
           if(wallet>=actualPrice){
-          
+            wallet_substracted_price=actualPrice
            wallet-actualPrice
            takeWallet = actualPrice
            userCart.takeWallet=takeWallet
            actualPrice = 0
+           walletCheckingPrice = 0
          }else if(wallet<actualPrice&&wallet>0){
            takeWallet = wallet
            userCart.takeWallet = takeWallet
            actualPrice = actualPrice-wallet
+           walletCheckingPrice = actualPrice
+           wallet_substracted_price= 0
         }
        if(userCart.takeWallet){
+       
         const userEmail = req.session.email
          await Schema.findOneAndUpdate({email:userEmail},{$inc:{wallet:-(userCart.takeWallet)}})
        }
@@ -526,19 +530,38 @@ couponid=undefined
         user,
         totelAmount,
       })
+      req.session.order = newOrder._id;
+      console.log(wallet_substracted_price)
+      if(wallet_substracted_price==0){
+        console.log("wallet is 0")
+        const orderId = req.session.order
+        await orderSchema.findOneAndUpdate({_id:orderId},{$set:{walletStatus:true,walletAmount:userCart.wallet}})
+      }
       if(actualPrice==0){
+        const orderId = req.session.order
         const userEmail = req.session.email
+        await orderSchema.findOneAndUpdate({_id:orderId},{$set:{walletStatus:true,walletAmount:wallet_substracted_price}})
         await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
          res.json({allAmountWallet:true})
+
+    
       }else{
         
       if (paymentOption == "ONLINE") {
+        if(wallet==='useWallet'){
+        var options = {
+          amount: actualPrice*100,
+          currency: "INR",
+          receipt: "" + newOrder._id,
+        };
+      }else{
         var options = {
           amount: totelAmount*100,
           currency: "INR",
           receipt: "" + newOrder._id,
-        };
-        req.session.order = newOrder._id;
+      }
+    }
+        
         instance.orders.create(options, function (err, order) {
           if (err) console.log(err);
 
@@ -564,6 +587,7 @@ couponid=undefined
   
 
     } catch (err) {
+      console.log(err)
       res.render('users/errorPage')
     }
   },
@@ -580,12 +604,17 @@ couponid=undefined
       const response =  req.query.q
       console.log(response)
       console.log(order.paymentOption)
+      console.log(walletCheckingPrice)
       if(response=="paid"&&order.paymentOption=="ONLINE"){
        await orderSchema.findOneAndUpdate({_id:orderId},{$set:{status:"paid"}})
       } 
       if(response=="Cod"&&order.paymentOption=="COD"){
         await orderSchema.findOneAndUpdate({_id:orderId},{$set:{status:"Cod"}})
       }
+      if(response=="paid"&&order.paymentOption=="COD"&&walletCheckingPrice===0){
+        await orderSchema.findOneAndUpdate({_id:orderId},{$set:{status:"paid"}})
+       } 
+    
       
       next()
     } catch (err) {
@@ -606,7 +635,6 @@ couponid=undefined
         let userid = user._id;
         let order = await orderSchema.findOne({ user: userid }).sort({date:-1});
   
-      
         res.render("users/account", { logginChecker ,user, cartCount,categorie, order ,banner});
       } catch (err) {
         res.render('users/errorPage')
@@ -757,11 +785,12 @@ couponid=undefined
 },
 orderHistoryShow:async(req,res)=>{
   try{
+    
     const logginChecker = req.session.loggedin
     const userid = req.query.q
     const categorie = await category.find();
      let banner =   await bannerSchema.find()
-      let order = await orderSchema.find({ user: userid });
+      let order = await orderSchema.find({ user: userid }).sort({date:-1});;
     res.render('users/orderHistoryPage',{logginChecker,order,cartCount, banner,categorie})
 
   }catch(err){

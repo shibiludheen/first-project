@@ -41,7 +41,7 @@ const orderSchema=mongoose.Schema({
     },
     orderStatus:{
         type:String,
-        default:"Delivering"
+        default:"Requested"
 
     },
     billingAdress:{
@@ -51,6 +51,22 @@ const orderSchema=mongoose.Schema({
     delivery:{
         type:String,
         default:"order placed"
+    },
+    walletStatus:{
+        type:String,
+        default:false
+    },
+    walletAmount:{
+        type:Number,
+        default:0
+    },
+    coupenStatus:{
+        type:String,
+        default:false
+    },
+    couponAmount:{
+        type:String,
+        default:0
     }
 })
 
