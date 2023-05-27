@@ -14,6 +14,9 @@ const Subcategory = require("../models/subcategorie-schema");
 const { response } = require("express");
 const { isDefined } = require("razorpay/dist/utils/razorpay-utils");
  let wallet_substracted_price = undefined
+ let actual_price  = undefined
+ let coupen_Status = undefined
+ let coupen_Amount = undefined
 let otp1 = undefined;
 const couponStore={
   id:undefined,
@@ -366,9 +369,7 @@ module.exports = {
         return acc;
       }, 0);
       let banner =   await bannerSchema.find()
-      console.log(userCart.cart)
       if(userCart.cart.length===0){
-        console.log('yes')
         res.redirect('back')
       }else{
       res.render("users/checkout", {logginChecker, userCart, subTotal, cartCount,categorie,subcategory,banner });
@@ -388,7 +389,6 @@ module.exports = {
 
       const otp = eoverify.sendOtp(email);
       otp1 = otp.otp;
-      console.log(otp1);
       res.render("users/otp", { user });
       }
     } catch (err) {
@@ -496,12 +496,11 @@ couponid=undefined
            takeWallet = actualPrice
            userCart.takeWallet=takeWallet
            actualPrice = 0
-           walletCheckingPrice = 0
+           actual_price=0
          }else if(wallet<actualPrice&&wallet>0){
            takeWallet = wallet
            userCart.takeWallet = takeWallet
            actualPrice = actualPrice-wallet
-           walletCheckingPrice = actualPrice
            wallet_substracted_price= 0
         }
        if(userCart.takeWallet){
@@ -509,16 +508,12 @@ couponid=undefined
         const userEmail = req.session.email
          await Schema.findOneAndUpdate({email:userEmail},{$inc:{wallet:-(userCart.takeWallet)}})
        }
-       }
-       
-       
-
+      }
       
        
        if(paymentOption=="COD"||paymentOption=="ONLINE"){
-        console.log(billingAdress)
+      
         if(billingAdress==="null"){
-          console.log('this billing adress is null')
           res.json({method:"Adress_is_null"})
   
          }else{
@@ -531,9 +526,7 @@ couponid=undefined
         totelAmount,
       })
       req.session.order = newOrder._id;
-      console.log(wallet_substracted_price)
       if(wallet_substracted_price==0){
-        console.log("wallet is 0")
         const orderId = req.session.order
         await orderSchema.findOneAndUpdate({_id:orderId},{$set:{walletStatus:true,walletAmount:userCart.wallet}})
       }
@@ -569,11 +562,13 @@ couponid=undefined
          
         });
         await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
+        await orderSchema.findOneAndUpdate({_id:req.session.order},{$set:{coupenStatus:coupen_Status, couponAmount:coupen_Amount}})
       } else if(paymentOption=="COD") {
         req.session.order = newOrder._id;
        
        res.json({methode:"COD"})
        await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
+       await orderSchema.findOneAndUpdate({_id:req.session.order},{$set:{coupenStatus:coupen_Status, couponAmount:coupen_Amount}})
       }else{
         userEmail:req.session.email
         await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
@@ -596,22 +591,18 @@ couponid=undefined
       const userEmail = req.session.email;
       const orderId = req.session.order;
       let order = await orderSchema.findOne({ _id: orderId })
-      console.log(order)
       let user = await Schema.findOne({ email: userEmail }).populate({
         path: "cart.product",
         model: "prodect",
       });
       const response =  req.query.q
-      console.log(response)
-      console.log(order.paymentOption)
-      console.log(walletCheckingPrice)
       if(response=="paid"&&order.paymentOption=="ONLINE"){
        await orderSchema.findOneAndUpdate({_id:orderId},{$set:{status:"paid"}})
       } 
       if(response=="Cod"&&order.paymentOption=="COD"){
         await orderSchema.findOneAndUpdate({_id:orderId},{$set:{status:"Cod"}})
       }
-      if(response=="paid"&&order.paymentOption=="COD"&&walletCheckingPrice===0){
+      if(response=="paid"&&order.paymentOption=="COD"&&actual_price===0){
         await orderSchema.findOneAndUpdate({_id:orderId},{$set:{status:"paid"}})
        } 
     
@@ -645,10 +636,14 @@ couponid=undefined
   try{
     const  orderid = req.query.q;
       const order =  await orderSchema.findOne({id:orderid}).populate('user')
-      console.log(order)
       const user  =  req.session.email
       const amount = order.totelAmount
-      console.log(amount)
+      if(order.status=="paid"&&order.paymentOption=="COD"){
+        await Schema.findOneAndUpdate({email:user},{$inc:{wallet:amount}}) 
+      }
+      if(order.status=="Cod"&&amount>order.walletAmount){
+        await Schema.findOneAndUpdate({email:user},{$inc:{wallet:order.walletAmount}}) 
+      }
       if(order.status=="paid"&&order.paymentOption=="ONLINE"){ 
      await Schema.findOneAndUpdate({email:user},{$inc:{wallet:amount}}) 
       }else{
@@ -733,7 +728,7 @@ couponid=undefined
   },
   ApplyCode:async(req,res)=>{
     try{
-    
+      
       const userEmail = req.session.email
       let userCart = await Schema.findOne({ email: userEmail }).populate({
         path: "cart.product",
@@ -744,17 +739,18 @@ couponid=undefined
         return acc;
       }, 0);
        const coupenid= req.query.id
-      
         const coupen  = await coupenSchema.findOne({code:coupenid})
+        if(!coupen){ 
+          res.json({err:'coupon not found'})
+         
+      }
         const code = coupen.code
         const discount = coupen.discount
         const  minOrderAmount = coupen.  minOrderAmount
         const maxDiscountAmount = coupen.maxDiscountAmount
         const expireDate = coupen.expiresAt
-       if(!coupen){ res.json({err:'coupen not found'})
-       return
-    }
-       else{
+     
+       if(coupen){
         const currentDate = Date.now()
         if(currentDate>expireDate){
           res.json({err:'coupon expired'})
@@ -769,12 +765,15 @@ couponid=undefined
          res.json({err:`you needed to purchase above ${minOrderAmount}`})
          return
         }
-        await coupenSchema.findOneAndUpdate({code:coupenid},{$inc:{usersAllowed:1}})
+        const coupenStatus = await coupenSchema.findOneAndUpdate({code:coupenid},{$inc:{usersAllowed:1}})
         couponStore.id = coupenid
         couponStore.discount = discount
         couponStore.maxAmount = maxDiscountAmount
+          coupen_Amount = discount
+          coupen_Status =  true
        
         res.json({validated:true,discount:discount,maxAmount: maxDiscountAmount})
+         
        
        }
    
@@ -827,7 +826,7 @@ orderHistoryShow:async(req,res)=>{
    },forgotPasswordEmailVerify:async(req,res)=>{
     try{
       const email = req.body.email
-      console.log(email)
+    
     const user =   await Schema.findOne({email:email})
    const error = 'This email not found'
    
@@ -837,7 +836,7 @@ if (user === null) {
   const otp = eoverify.sendOtp(email);
    NewPasswordEmail=email
   otp1 = otp.otp;
-  console.log(otp);
+
   res.render('users/forgotPasswordEmailOtp')
 }
     }catch(err){
@@ -876,13 +875,13 @@ if (user === null) {
    showOrderProductDetail:async(req,res)=>{
     try{
     const  id = req.query.q
-    console.log(id)
+  
     const logginChecker = req.session.loggedin
     const subcategory = await Subcategory.find()
     const categorie = await category.find();
     let banner =   await bannerSchema.find()
      const productDetails=  await  orderSchema.findOne({_id:id}).populate({path:"products.product",model:"prodect"})
-     console.log(productDetails)
+     
         res.render('users/orderDetailProductPage',{ productDetails,logginChecker, categorie ,cartCount,subcategory,banner})
     }catch(err){
       res.render('users/errorPage')
@@ -904,16 +903,14 @@ if (user === null) {
 
    },profileEditApply:async(req,res)=>{
     try{
-      console.log('hai')
+      
      userId = req.query.q
-     console.log(userId)
      const full_name  = req.body.full_name
      const Phone = req.body.Phone
  
        await Schema.updateOne({_id:userId},{$set:{full_name:full_name,Phone:Phone}})
        res.redirect('/accountView')
     }catch(err){
-      console.log(err)
       res.render('users/errorPage')
     }
    }

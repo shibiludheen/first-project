@@ -98,104 +98,185 @@
     </div>
   </header>
   <main>
-    <%if(!order){ %>
+    <% order.forEach(order => {%>
+      
+   
+    
+  </section>
+  <%if(!order){ %>
       <div class="header-bottom text-center">
         <p> YOU DON'T ORDER ANYTHING<a href="/" class="browse-btn">Shop Now</a></p>
       </div>
 
       <%} else{ %>
-        <%order.forEach((x)=>{%>
-          <div class="table-responsive"style="background-color: #a8729a; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th class="col">PaymentOption</th>
-                  <th class="col">Payment</th>
-                  <th class="col">Date</th>
-                  <th class="col">Status</th>
-                  <th class="col"> Price</th>
-                </tr>
-              </thead>
-              <tbody>
+        <section class="h-100 gradient-custom">
+          <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+              <div class="col-lg-10 col-xl-8">
+                <div class="card" style="border-radius: 10px;">
+                  <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                      <p class="lead fw-normal mb-0" style="color: #a8729a;">Receipt</p>
+                      <p class="small text-muted mb-0">Receipt Voucher : 1KAU9-84UIL</p>
+                    </div>
 
-                <tr>
-                  <td>
-                    <%=x.paymentOption%>
-                  </td>
-                  <td>
-                    <%=x.status%>
-                  </td>
-                  <td>
-                    <%=x.date.toLocaleDateString()%>
-                  </td>
-                  <td>
-                    <%=x.orderStatus%>
-                  </td>
-                  <td>₹<%=x.totelAmount%>
-                  </td>
-                  <td>
-                    <%if(x.status=="paid"){%>
+                    <div class="card shadow-0 border mb-4">
+                      <div class="card-body">
+                          
+                            <%if(order.status=="paid"||order.status=="Cod"){%>
+                              <div class="row d-flex align-items-center">
+                                <div class="col-md-2">
+                                  <p class="text-muted mb-0 small">Track Order</p>
+                                </div>
+                                <div class="col-md-10">
+                                  <%if(order.delivery=="delivered") {%>
+                                    <div class="progress" style="height: 6px; border-radius: 16px;">
+                                      <div class="progress-bar" role="progressbar"
+                                        style="width: 100%; border-radius: 16px; background-color: #f80303;"
+                                        aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <%}else if(order.delivery=="Out for delivery" ){%>
+                                      <div class="progress" style="height: 6px; border-radius: 16px;">
+                                        <div class="progress-bar" role="progressbar"
+                                          style="width: 65%; border-radius: 16px; background-color: #f80303;"
+                                          aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                      </div>
+                                      <%}else if(order.delivery=="shipped" ){%>
+                                        <div class="progress" style="height: 6px; border-radius: 16px;">
+                                          <div class="progress-bar" role="progressbar"
+                                            style="width: 37%; border-radius: 16px; background-color: #f80303;"
+                                            aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <%}else if(order.delivery=="order placed" ){%>
+                                          <div class="progress" style="height: 6px; border-radius: 16px;">
+                                            <div class="progress-bar" role="progressbar"
+                                              style="width: 20%; border-radius: 16px; background-color: #f80303;"
+                                              aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                          </div>
+                                          <%}%>
+                                          <%if(order.orderStatus=="return"){%>
+                                            <div class="d-flex justify-content-around mb-1">
+                                              <p class="text-muted mt-1 mb-0 small ms-xl-5">Product return has been requested</p>
+                                            
+                                            </div>
+                                            <%}else if(order.orderStatus=="orderCancelled"){%>
+                                              <div class="d-flex justify-content-around mb-1">
+                                                <p class="text-muted mt-1 mb-0 small ms-xl-5">Order has been cancelled</p>
+                        
+                                              </div>
+                                              <%}else{%>
+                                              <div class="d-flex justify-content-around mb-1">
+                                              <p class="text-muted mt-1 mb-0 small ms-xl-5">Order placed</p>
+                                              <p class="text-muted mt-1 mb-0 small ms-xl-5">Shipped</p>
+                                              <p class="text-muted mt-1 mb-0 small ms-xl-5">Out for delivary</p>
+                                              <p class="text-muted mt-1 mb-0 small ms-xl-5">Delivered</p>
+                                            </div>
+                                            <%}%>
+                                </div>
+                              </div>
+                              <%}else{%>
+                                <div class="row d-flex align-items-center">
+                                  <div class="col-md-2">
+                                    <p class="text-muted mb-0 small">Track Order</p>
+                                  </div>
+                                  <div class="col-md-10">
+                                    <%if(order.delivery=="delivered") {%>
+                                      <div class="progress" style="height: 6px; border-radius: 16px;">
+                                        <div class="progress-bar" role="progressbar"
+                                          style="width: 100%; border-radius: 16px; background-color: #f80303;"
+                                          aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                      </div>
+                                      <%}else if(order.delivery=="Out for delivery" ){%>
+                                        <div class="progress" style="height: 6px; border-radius: 16px;">
+                                          <div class="progress-bar" role="progressbar"
+                                            style="width: 65%; border-radius: 16px; background-color: #f80303;"
+                                            aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <%}else if(order.delivery=="shipped" ){%>
+                                          <div class="progress" style="height: 6px; border-radius: 16px;">
+                                            <div class="progress-bar" role="progressbar"
+                                              style="width: 37%; border-radius: 16px; background-color: #f80303;"
+                                              aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                          </div>
+                                          <%}else if(order.delivery=="order placed" ){%>
+                                            <div class="progress" style="height: 6px; border-radius: 16px;">
+                                              <div class="progress-bar" role="progressbar"
+                                                style="width: 0%; border-radius: 16px; background-color: #f80303;"
+                                                aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <%}%>
+                                              <div class="d-flex justify-content-around mb-1">
+                                                <p class="text-muted mt-1 mb-0 small ms-xl-5">Order don't placed becuase
+                                                  something went wrong</p>
+                                              </div>
+                                  </div>
+                                </div>
+                                <%}%>
+                      </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between pt-2">
+                      <p class="fw-bold mb-0">Order Details</p>
+                      <p class="text-muted mb-0"><span class="fw-bold me-4">Total</span>₹<%=order.totelAmount%>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="card-footer border-0 px-4 py-5"
+                    style="background-color: #a8729a; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+                    <%if(order.status=="paid"){%>
                       <h5 class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0">Total
-                        paid: <span class="h2 mb-0 ms-2">₹<%=x.totelAmount%></span></h5>
-                      <%}else if(x.status=="Cod"&&x.delivery=="delivered"){%>
+                        paid: <span class="h2 mb-0 ms-2">₹<%=order.totelAmount%></span></h5>
+                      <%}else if(order.status=="Cod"&&order.delivery=="delivered"){%>
                         <h5 class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0">Total
-                          paid: <span class="h2 mb-0 ms-2">₹<%=x.totelAmount%></span></h5>
+                          paid: <span class="h2 mb-0 ms-2">₹<%=order.totelAmount%></span></h5>
                         <%}else{%>
                           <h5 class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0">Total
                             paid: <span class="h2 mb-0 ms-2">₹Not paid</span></h5>
                             <%}%>
-                    </td>
-                  <td>
-                    <%=x.delivery %>
-                  </td>
-                  <td>
-                    <%if(x.orderStatus=="return"){%>
-                      <div class="d-flex justify-content-around mb-1">
-                        <p class="text-muted mt-1 mb-0 small ms-xl-5">Product return has been requested</p>
+                            <% if(order.delivery=="delivered" ||order.delivery=="Out for delivery"||order.orderStatus=="orderCancelled"){%>
+                              <%if(order.walletStatus=="true"&&order.status=="paid"||order.paymentOption=="COD"&&order.walletStatus=="true"){%>
+                                <p class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0"> 
+                                  Amount added to wallet : ₹<%=order.walletAmount%> </p>
+                                <%}%>
+                                <%}else{%>
+                                  <%if(order.walletStatus=="true"&&order.status=="paid"||order.paymentOption=="COD"&&order.walletStatus=="true"){%>
+                                    <p class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0"> Discounted
+                                      price from wallet : ₹<%=order.walletAmount%> </p>
+                                    <%}%>
+                                <%}%>
+                              <%if(order.coupenStatus=="true"){%>
+                                <p class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0"> 
+                                 Coupon applied : %<%=order.couponAmount%> </p>
+                              <%}%>
 
-                      </div>
-                      <%}%>
-                      <%if(x.orderStatus=="orderCancelled"){%>
-                      <div class="d-flex justify-content-around mb-1">
-                        <p class="text-muted mt-1 mb-0 small ms-xl-5">Order has been cancelled</p>
-
-                      </div>
-                      <%}%>
-                  </td>
-                  <td>
-                    <form action="showProductDetails?q=<%=x._id%>" method="post">
+                          <form action="deleteOrder?q=<%=order._id%>" method="post">
+                            <% if(order.delivery=="delivered" ||order.delivery=="Out for delivery"||order.orderStatus=="orderCancelled" ){ %>
+                              <button hidden type="submit" class="btn btn-outline-primary ms-1"> CANCEL ORDER</button>
+                              <%}else{%>
+                                <button type="submit" class="btn btn-outline-primary ms-1"> CANCEL ORDER</button>
+                                <%}%>
+                          </form>
+                          <form action="showProductDetails?q=<%=order._id%>" method="post">
                            
-                           <button  type="submit" class="btn btn-outline-primary ms-1"> Product details</button>
-                       </form>
-                       </td>
-                  <td>
-                    <% if(x.delivery=="delivered" ){%>
-                      <button type="submit" class="btn btn-outline-primary ms-1"><a href="returnOrder?q=<%=x._id%>">
-                          Return</a> </button>
+                              <button  type="submit" class="btn btn-outline-primary ms-1"> Product details</button>
+                          </form>
+                          
+                          <% if(order.delivery=="delivered" ){%>
+                            <button type="submit" class="btn btn-outline-primary ms-1"><a
+                                href="returnOrder?q=<%=order._id%>"> Return</a> </button>
 
-                      <%} else if(x.orderStatus=="return" ){%>
-                        <button type="submit" class="btn btn-outline-primary ms-1" hidden><a
-                            href="returnOrder?q=<%=x._id%>" hidden> Return</a> </button>
-                        <%}%>
-                  </td>
-                  <td>
-                    <form action="deleteOrder?q=<%=x._id%>" method="post">
-                      <% if(x.delivery=="delivered" ||x.delivery=="Out for delivery" ||x.orderStatus=="orderCancelled"){ %>
-                        <button hidden type="submit" class="btn btn-outline-primary ms-1 "> CANCEL ORDER</button>
-                        <%}else{%>
-                          <button type="submit" class="btn btn-outline-primary ms-1"> CANCEL ORDER</button>
-                          <%}%>
-                    </form>
-                  </td>
-                </tr>
+                            <%}%>
 
-              </tbody>
-            </table>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+          <% }%>
+        </section>
 
-          <% })%>
-            <%}%>
-
+        
+     <% });%>
   </main>
 
 

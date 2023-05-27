@@ -322,9 +322,21 @@
                           <h5 class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0">Total
                             paid: <span class="h2 mb-0 ms-2">₹Not paid</span></h5>
                             <%}%>
-                            <%if(order.walletStatus=="true"&&order.status=="paid"||order.paymentOption=="COD"&&order.walletStatus=="true"){%>
-                              <h5 class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0">Total
-                                Amount from wallet : ₹<%=order.walletAmount%> <span class="h2 mb-0 ms-2"></span></h5>
+                            
+                             <% if(order.delivery=="delivered" ||order.delivery=="Out for delivery"||order.orderStatus=="orderCancelled"){%>
+                              <%if(order.walletStatus=="true"&&order.status=="paid"||order.paymentOption=="COD"&&order.walletStatus=="true"){%>
+                                <p class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0"> 
+                                  Amount added to wallet : ₹<%=order.walletAmount%> </p>
+                                <%}%>
+                                <%}else{%>
+                                  <%if(order.walletStatus=="true"&&order.status=="paid"||order.paymentOption=="COD"&&order.walletStatus=="true"){%>
+                                    <p class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0"> Discounted
+                                      price from wallet : ₹<%=order.walletAmount%> </p>
+                                    <%}%>
+                                <%}%>
+                              <%if(order.coupenStatus=="true"){%>
+                                <p class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0"> 
+                                 Coupon applied : %<%=order.couponAmount%> </p>
                               <%}%>
 
                           <form action="deleteOrder?q=<%=order._id%>" method="post">
@@ -338,6 +350,7 @@
                            
                               <button  type="submit" class="btn btn-outline-primary ms-1"> Product details</button>
                           </form>
+                          
                           <% if(order.delivery=="delivered" ){%>
                             <button type="submit" class="btn btn-outline-primary ms-1"><a
                                 href="returnOrder?q=<%=order._id%>"> Return</a> </button>
