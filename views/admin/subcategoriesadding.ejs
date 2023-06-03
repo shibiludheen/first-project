@@ -200,7 +200,11 @@
                              </div> 
                         </div>
                     </form>           
-                       
+                    <% if (typeof error!=="undefined"){ %>
+                        <div class="alert alert-danger" role="alert">
+                          <%-error%>
+                        </div>
+                      <%}%>
                      
                     </div>
                     <table class="table table-dark">
@@ -276,6 +280,7 @@
 
     <!-- Template Javascript -->
     <script src="darkpan/js/main.js"></script>
+
 </body>
 
 </html>

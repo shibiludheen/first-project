@@ -1,5 +1,7 @@
 let controller = require('../controller/admincontroller')
 let checkAdmin = require('../controller/adminAunth')
+const multer = require('multer');
+const upload = multer({ dest: 'assets/image/products' });
 let express = require('express')
 const router = require('./user')
 let Router =  express.Router()
@@ -39,5 +41,15 @@ let Router =  express.Router()
  router.post('/bannerIsActiveFalse',checkAdmin.checkAdmin,controller.bannerIsActiveFalse)
  router.post('/bannerIsActiveTrue',checkAdmin.checkAdmin,controller.bannerIsActiveTrue)
  router.post('/deletebanner',checkAdmin.checkAdmin,controller.bannerDelete)
- 
+ router.post('/editProductPage',checkAdmin.checkAdmin,controller.productEditPageShow)
+ router.post('/editProduct',checkAdmin.checkAdmin,controller.moreImageAdding, controller.editTheProduct)
+ router.get('/showImageDetails',checkAdmin.checkAdmin,controller.productImageShow)
+ router.get('/imageDeletePosition',checkAdmin.checkAdmin,controller.imageDelete)
+ router.get('/changeImagePage',checkAdmin.checkAdmin,controller.imageUpdatePage)
+ router.post('/changingTheImage', checkAdmin.checkAdmin, upload.single('image'), controller.imageUpdate);
+ router.get('/OrderProductDetails',checkAdmin.checkAdmin,controller.orderProductDetails)
+ router.get('/orderAdressView',checkAdmin.checkAdmin,controller.prderAdressShower)
+ router.get('/imageCropAdd',checkAdmin.checkAdmin,controller.cropImagePage)
+
   module.exports = Router 
+  

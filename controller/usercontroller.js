@@ -296,10 +296,7 @@ module.exports = {
       { email: user, "cart.product": productId },
       { $inc: { "cart.$.quantity": 1 } }
     );      
-    let productSchema = await product1.updateOne(
-      { _id: productId },
-      { $inc: { stocks: -1 } }
-    );
+   
 
     res.json({ changed: true });
     }catch(err){
@@ -313,10 +310,6 @@ module.exports = {
     let product = await Schema.updateOne(
       { email: user, "cart.product": productId },
       { $inc: { "cart.$.quantity": -1 } }
-    );
-    let productSchema = await product1.updateOne(
-      { _id: productId },
-      { $inc: { stocks: 1 } }
     );
 
     res.json({ changed: true });
@@ -534,6 +527,15 @@ couponid=undefined
         const orderId = req.session.order
         const userEmail = req.session.email
         await orderSchema.findOneAndUpdate({_id:orderId},{$set:{walletStatus:true,walletAmount:wallet_substracted_price}})
+        userCart.cart.forEach(async(element)=>{        
+          const quantity = element.quantity;
+          const product = element.product;        
+          console.log('Initial stocks:', product.stocks)
+          console.log('Quantity:', quantity);        
+          product.stocks = product.stocks - quantity;        
+          console.log('Updated stocks:', product.stocks)
+          await product1.findByIdAndUpdate(product._id, { stocks: product.stocks });
+        });
         await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
          res.json({allAmountWallet:true})
 
@@ -561,17 +563,37 @@ couponid=undefined
           res.json({ methode: "online", order: order });
          
         });
+            userCart.cart.forEach(async(element)=>{        
+          const quantity = element.quantity;
+          const product = element.product;        
+          console.log('Initial stocks:', product.stocks)
+          console.log('Quantity:', quantity);        
+          product.stocks = product.stocks - quantity;        
+          console.log('Updated stocks:', product.stocks)
+          await product1.findByIdAndUpdate(product._id, { stocks: product.stocks });
+        });
+        
         await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
         await orderSchema.findOneAndUpdate({_id:req.session.order},{$set:{coupenStatus:coupen_Status, couponAmount:coupen_Amount}})
       } else if(paymentOption=="COD") {
         req.session.order = newOrder._id;
        
        res.json({methode:"COD"})
+       userCart.cart.forEach( async(element)=>{        
+          const quantity = element.quantity;
+          const product = element.product;        
+          console.log('Initial stocks:', product.stocks)
+          console.log('Quantity:', quantity);        
+          product.stocks = product.stocks - quantity;        
+          console.log('Updated stocks:', product.stocks)
+          await product1.findByIdAndUpdate(product._id, { stocks: product.stocks });
+        });
+
+    
        await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
        await orderSchema.findOneAndUpdate({_id:req.session.order},{$set:{coupenStatus:coupen_Status, couponAmount:coupen_Amount}})
       }else{
-        userEmail:req.session.email
-        await Schema.findOneAndUpdate({email:userEmail},{$set:{cart:[]}})
+        res.redirect('back')
       }
 
     

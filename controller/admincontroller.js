@@ -10,6 +10,7 @@ const coupenSchema = require('../models/coupen')
 const bannerSchema = require('../models/banner-schema')
 const Excel = require('exceljs')
 const PDFDocument = require('pdfkit-table')
+const fs = require('fs')
 const order = require("../models/order-schema");
 const { Console } = require("console");
 
@@ -27,7 +28,7 @@ module.exports = {
       {$match:{delivery:'delivered'}},
       {$group:{_id:null,totel:{$sum:'$totelAmount'}}}
    ])
-   
+  
     
    const totelSale = await orderSchema.count()
    const totelUser = await userSchema.count()
@@ -123,7 +124,7 @@ module.exports = {
         const img = name + Date.now() + "." + ext;
         cb(null, img);
 
-        
+         
       },
     });
     const upload = multer({
@@ -143,10 +144,13 @@ module.exports = {
   categoriesAdding: async (req, res) => {
     try{
     const category = req.body;
+      
     const categories = await categorieSchema.create(category);
     res.redirect("back");
     }catch(err){
-      res.render('admin/errorPage')
+      const categorie = await categorieSchema.find();
+      const error = "This is already existed"
+      res.render('admin/categoriesAdding',{error,categorie});
     }
   },
   usersview: async (req, res) => {
@@ -222,7 +226,9 @@ module.exports = {
        await subcategory.create({category }) 
        res.redirect('back')
     }catch(err){
-      res.redirect('back')
+      const  categorie  =  await subcategory.find()
+      const error = "This is already existed"
+      res.render('admin/subcategoriesAdding',{error,categorie});
     }
 
 
@@ -245,10 +251,9 @@ module.exports = {
   },
   orderDetailView:async(req,res)=>{
     
-      const orderdetail = await orderSchema.find().populate('user')
-      console.log(orderdetail)
-  
-    res.render('admin/orderdetail',{orderdetail})
+    const orderdetail = await orderSchema.find().populate('user');
+    console.log(orderdetail);
+    res.render('admin/orderdetail', { orderdetail });
 
   },orderDeliveryStatus:async(req,res)=>{
      try{
@@ -329,7 +334,8 @@ Coupen:async(req,res)=>{
   res.render('admin/coupen',{coupen})
 
  }catch(err){
-  res.render('admin/errorPage')
+  const error = "This coupen code  already existed"
+  res.render('admin/coupen',{error});
 
  }
 },
@@ -339,7 +345,9 @@ AddCoupen:async(req,res)=>{
    await coupenSchema.create({code,discount,minOrderAmount,maxDiscountAmount,usersAllowed,expiresAt,isActive})
   res.redirect('back')
   }catch(err){
-    res.render('admin/errorPage')
+    const coupen  = await coupenSchema.find() 
+    const error = "This coupen code  already existed"
+    res.render('admin/coupen',{error,coupen});
 
   }
 },
@@ -424,6 +432,226 @@ isActiveTrue:async(req,res)=>{
    res.redirect('back')
   }catch(err){
     res.render('admin/errorPage')
+
+  }
+},productEditPageShow:async(req,res)=>{
+  try{
+    const  id = req.query.q
+    console.log(id)
+    const Categorie =   await categorieSchema.find()
+      const product  = await productSchema.findById({_id:id})
+      console.log(product)
+      res.render('admin/productEditPage',{product,Categorie})
+
+  }catch(err){
+    res.render('admin/errorPage')
+  }
+},moreImageAdding:async(req,res,next)=>{
+  try{
+    //for multer config
+    const multerstorage = multer.diskStorage({
+      destination: (req, file, cb) => {
+        cb(null, "assets/image/products");
+      },
+      filename: (req, file, cb) => {
+        const ext = file.mimetype.split("/")[1];
+        const name = req.body.productName;
+        const img = name + Date.now() + "." + ext;
+        cb(null, img);
+
+         
+      },
+    });
+    const upload = multer({
+      storage: multerstorage,
+    });
+    ///
+    upload.array("images", 10)(req, res, (err) => {
+      if (err) console.log(err);
+      else {
+        next();
+      }
+    });
+  }catch(err){
+    res.render('admin/errorPage')
+  }
+},editTheProduct:async(req,res)=>{  
+  try {
+  const images = req.files.map((file) => file.filename);
+
+  const {
+    productName,
+    type,
+    brandName,
+    size,
+    seller,
+    occasion,
+    category,
+    description,
+    price,
+    stocks,
+  } = req.body;
+
+  const id = req.query.q;
+  console.log(images)
+ if(images.length===0){
+  console.log('this is image nullhai')
+  await productSchema.findByIdAndUpdate(
+    { _id: id },
+    {
+      $set: {
+        productName,
+        type,
+        brandName,
+        size,
+        seller,
+        occasion,
+        category,
+        description,
+        price,
+        stocks,
+        
+      },
+    }
+  )
+ }else{
+  console.log(' this is image full hai')
+  await productSchema.findByIdAndUpdate(
+    { _id: id },
+    {
+      $set: {
+        productName,
+        type,
+        brandName,
+        size,
+        seller,
+        occasion,
+        category,
+        description,
+        price,
+        stocks,
+        images,
+      },
+    }
+  )
+ }
+ 
+
+  res.redirect('/productController')
+} catch (error) {
+  console.log(error);
+  res.status(500).json({ success: false, message: "Error occurred while updating the product." });
+}
+  
+
+
+},productImageShow:async(req,res)=>{
+  try{
+    const id  = req.query.q
+    console.log(id)
+     const productImage =  await productSchema.findById({_id:id})
+     console.log(productImage)
+    res.render('admin/productImage',{productImage})
+
+  }catch(err){
+    console.log(err)
+    res.render('admin/errorPage')
+  }
+},imageDelete:async(req,res)=>{
+  try{
+   
+   const  imageName = req.query.image
+   const  productId  = req.query.productId
+   console.log(imageName)
+   console.log(productId)
+    await productSchema.updateOne({_id:productId},{$pull:{images:imageName}})
+    res.json({imageRemoved:true})
+  }catch(err){
+    console.log(err)
+    res.render('admin/errorPage')
+  }
+},imageUpdatePage:async(req,res)=>{
+  try{
+  const   productId  =  req.query.productId
+  const oldImagePath  = req.query.oldImagePath
+  console.log(productId)
+  console.log(oldImagePath)
+   const product  = await productSchema.findById({_id:productId})
+    res.render('admin/productImageUpdate',{product,oldImagePath})
+
+  }catch(err){
+    console.log(err)
+    res.render('admin/errorPage')
+  }
+
+},imageUpdate:async(req,res)=>{
+  try{
+    console.log('hai')
+    const upload = multer({ dest: 'assets/image/products' });
+    const newImageFile = req.file
+    const oldImagePath = req.query.oldImagePath
+    const imageId  = req.query.imageUrl
+    console.log(imageId)
+    const imageUrl   =  encodeURIComponent(imageId)
+    console.log(newImageFile)
+    console.log(oldImagePath)
+    const newfilePath  = ` http://localhost:3000/image/products/${imageUrl}`
+    fs.readFile(newImageFile.path, (err, data) => {
+      if (err) {
+        return res.status(500).send('Error occurred while reading the new image file.');
+      }
+  
+      // Write the new image file, replacing the old image
+      fs.writeFile(oldImagePath, data, (err) => {
+        if (err) {
+          console.log(err)
+          return res.status(500).send('Error occurred while updating the image file.');
+        }
+  
+        // Delete the temporary file uploaded
+        fs.unlink(newImageFile.path, (err) => {
+          if (err) {
+            console.log('Error occurred while deleting the temporary file:', err);
+          }
+    console.log(newfilePath)
+          res.json({changed:true, newImageURL: newfilePath  })
+        });
+      });
+    });
+  }catch(err){
+    console.log(err)
+
+  }
+},orderProductDetails:async(req,res)=>{
+  try{
+    const orderId = req.query.q
+     const order = await  orderSchema.findOne({_id:orderId}).populate({path:"products.product",model:"prodect"}).sort({date:-1})
+     console.log(order)
+     res.render('admin/orderProductDetails',{order})
+
+  }catch(err){
+ console.log(err)
+  }
+},prderAdressShower:async(req,res)=>{
+  try{
+     const adressId =req.query.q
+     const userId = req.query.userId
+     console.log(adressId)
+     
+     const user =  await userSchema.findById({_id:userId})
+     console.log(user)
+     const adress = user.Adress.id(adressId)
+     console.log(adress)
+     res.render('admin/productAdressPage',{adress})
+     
+
+  }catch(Err){
+
+  }
+},cropImagePage:async(req,res)=>{
+  try{
+    res.render('admin/cropImagePage')
+  }catch(err){
 
   }
 }

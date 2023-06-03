@@ -280,7 +280,11 @@
                          <td><%=x.productName%></td>  
                          <td><%=x.brandName%></td>
                          <td>₹<%=x.price%></td>
-                         <td><%=x.stocks%></td> 
+                         <td><%=x.stocks%></td>
+                         <td>      <form action="editProductPage?q=<%=x._id%>" method="post">
+                            <button type="submit" class="btn btn-success" > Edit</button>
+                          </form>
+                        </td> 
                          <td> <% if (x.status==false) { %>
                             <form action="list?q=<%=x._id%>" method="post">
                               <button type="submit" class="btn btn-success"  onclick="return confirm('are you want to list <%=x.product_name%>')"> list</button>
@@ -509,6 +513,7 @@
 
     <!-- Template Javascript -->
     <script src="darkpan/js/main.js"></script>
+
 </body>
 
 </html>

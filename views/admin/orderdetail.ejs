@@ -187,24 +187,23 @@
                             <table class="table">
                         <thead>
                         <tr> 
-                            <th class="col">email</th>
-                            <th class="col">paymentOption</th>
-                            <th class="col" >paymentment</th>
-                            <th class="col" >date</th> 
-                            <th class="col" >status</th> 
-                            <th class="col" > price</th>            
+                            <th >email</th>
+                            <th >paymentOption</th>
+                            <th  >paymentment</th>
+                            <th  >date</th> 
+                            <th  >status</th> 
+                            <th  > price</th>            
                         </tr>
                         </thead>
                            <tbody>
                                 <% orderdetail.forEach((x)=>{ %>
                               <tr>
-                               <td><%=x.user.email%></td> 
+                               <td><%= x.user ? x.user.email : '' %></td> 
                                <td><%=x.paymentOption%></td>
                                <td><%=x.status%></td>
                                <td><%=x.date.toLocaleDateString()%></td>
                                <td><%=x.orderStatus%></td>
                                <td>₹<%=x.totelAmount%></td>
-                               <td><%=x.delivery %></td>
                             
                               <form action="changeOrderStatus?id=<%=x._id%>" method="post">
                                <td> <select class="form-select"  name="delivery" id="floatingSelect"
@@ -216,9 +215,11 @@
                                 <option value="delivered">Delivered</option>
                             </select></td>
                             <td>
-                                <button type="submit" class="  btn btn-success">
+                                <button type="submit" class="  btn btn-success"> 
                                   change</button>
                                   </td>
+                                  <td><a href="OrderProductDetails?q=<%=x._id%>" class="btn btn-success ">product</a></td>
+                                  <td><a href="orderAdressView?q=<%=x.billingAdress%>&userId=<%=x.user._id%>" class="btn btn-success ">ToAdress</a></td>
                                   </form>
                              </tr> 
                             <%})%>                 
@@ -272,6 +273,7 @@
 
     <!-- Template Javascript -->
     <script src="darkpan/js/main.js"></script>
+
 </body>
 
 </html>

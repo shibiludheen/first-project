@@ -1,7 +1,7 @@
+
 module.exports = {
-    checkAdmin:(req,res,next)=>{
+    checkAdmin: (req,res,next)=>{
         const loggingStatus = req.session.adminloggedin
-        console.log(loggingStatus)
         if(loggingStatus == true){
          
             next()

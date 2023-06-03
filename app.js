@@ -17,7 +17,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine','ejs')
 var db = require('./database/connection')
 db.connect()
-app.use(session({secret:'key',resave:false,saveUninitialized:false,cookie:{maxAge:1000000}}))
+app.use(session({secret:'key',resave:false,saveUninitialized:false,cookie:{maxAge:10000000}}))
 app.use(express.urlencoded({extended:false}))
 app.use(nocache())
 app.use('/',userRouter)

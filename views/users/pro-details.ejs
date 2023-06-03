@@ -104,7 +104,7 @@
 <div class="single-services d-flex align-items-center mb-0">
                 <ul id="glasscase" class="gc-start">
                     <% product.images.forEach((x)=>{ %>
-                    <li><img src="/image/products/<%=x%>" alt="Text" data-gc-caption="Your caption text" /></li>
+                    <li><img src="/image/products/<%=x%>" alt="Text" data-gc-caption /></li>
                     <%}) %>
                 </ul>
 <div class="features-caption">
@@ -148,9 +148,8 @@
 </div>
 <div class="container">
 <div class="tab-content" id="nav-tabContent">
-<div class="tab-pane fade show active" id="nav-one" role="tabpanel" aria-labelledby="nav-one-tab">
 <p><%=product.discription%></p>
-</div>
+
 </div>
 </div>
 </section>
@@ -2431,6 +2430,11 @@
 
 })(jQuery, window, document);
         </script>
+        <script>
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+</script>
 </body>
 
 </html>

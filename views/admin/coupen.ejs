@@ -296,8 +296,14 @@
                             </div>
                             <button type="submit" class="btn btn-dark">submit</button>
 
+
                         </form>
-                        
+
+                        <% if (typeof error!=="undefined"){ %>
+                            <div class="alert alert-danger" role="alert">
+                              <%-error%>
+                            </div>
+                          <%}%>
 
                         </div>
                     
