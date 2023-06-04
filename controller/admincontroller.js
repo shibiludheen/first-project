@@ -476,7 +476,7 @@ isActiveTrue:async(req,res)=>{
     res.render('admin/errorPage')
   }
 },editTheProduct:async(req,res)=>{  
-  try {
+ try {
   const images = req.files.map((file) => file.filename);
 
   const {
@@ -493,54 +493,41 @@ isActiveTrue:async(req,res)=>{
   } = req.body;
 
   const id = req.query.q;
-  console.log(images)
- if(images.length===0){
-  console.log('this is image nullhai')
-  await productSchema.findByIdAndUpdate(
-    { _id: id },
-    {
-      $set: {
-        productName,
-        type,
-        brandName,
-        size,
-        seller,
-        occasion,
-        category,
-        description,
-        price,
-        stocks,
-        
-      },
-    }
-  )
- }else{
-  console.log(' this is image full hai')
-  await productSchema.findByIdAndUpdate(
-    { _id: id },
-    {
-      $set: {
-        productName,
-        type,
-        brandName,
-        size,
-        seller,
-        occasion,
-        category,
-        description,
-        price,
-        stocks,
-        images,
-      },
-    }
-  )
- }
+  if (req.files.length > 0) {
+    
+    req.files.forEach((file) => {
+      images.push(file.filename);
+    });
+  
+    await productSchema.findByIdAndUpdate(
+      { _id: id },
+      { $push: { images: { $each: images } } }
+    );
+  } else {
+    await productSchema.findByIdAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          productName,
+          type,
+          brandName,
+          size,
+          seller,
+          occasion,
+          category,
+          description,
+          price,
+          stocks,
+        },
+      }
+    );
+  }
  
 
   res.redirect('/productController')
 } catch (error) {
   console.log(error);
-  res.status(500).json({ success: false, message: "Error occurred while updating the product." });
+  res.render('admin/errorPage')
 }
   
 
