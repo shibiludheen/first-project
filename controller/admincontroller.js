@@ -106,7 +106,7 @@ module.exports = {
         stocks,
         images,
       });
-      res.redirect("back");
+      res.json({ success: true, message: 'Product updated successfully' });
     } catch (err) {
       res.render('admin/errorPage')
     }
@@ -476,8 +476,8 @@ isActiveTrue:async(req,res)=>{
     res.render('admin/errorPage')
   }
 },editTheProduct:async(req,res)=>{  
- try {
-  const images = req.files.map((file) => file.filename);
+  try {
+  
 
   const {
     productName,
@@ -494,10 +494,7 @@ isActiveTrue:async(req,res)=>{
 
   const id = req.query.q;
   if (req.files.length > 0) {
-    
-    req.files.forEach((file) => {
-      images.push(file.filename);
-    });
+    const images = req.files.map((file) => file.filename);
   
     await productSchema.findByIdAndUpdate(
       { _id: id },
@@ -523,8 +520,8 @@ isActiveTrue:async(req,res)=>{
     );
   }
  
-
-  res.redirect('/productController')
+  res.json({ success: true, message: 'Product updated successfully' });
+  
 } catch (error) {
   console.log(error);
   res.render('admin/errorPage')
@@ -578,11 +575,11 @@ isActiveTrue:async(req,res)=>{
     const newImageFile = req.file
     const oldImagePath = req.query.oldImagePath
     const imageId  = req.query.imageUrl
-    console.log(imageId)
+    console.log( "this is 1"+imageId)
     const imageUrl   =  encodeURIComponent(imageId)
-    console.log(newImageFile)
-    console.log(oldImagePath)
-    const newfilePath  = ` https://www.on-step.shop/image/products/${imageUrl}`
+    console.log(" this is 2"+newImageFile)
+    console.log("this is 3"+oldImagePath)
+    const newfilePath  = ` http://localhost:3000/image/products/${imageUrl}`
     fs.readFile(newImageFile.path, (err, data) => {
       if (err) {
         return res.status(500).send('Error occurred while reading the new image file.');
