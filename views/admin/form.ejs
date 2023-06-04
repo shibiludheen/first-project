@@ -259,7 +259,7 @@
                             </form>
                         </div>
                     </div> -->
-                    <form action="/product" method="post" enctype="multipart/form-data">
+                    <form id="productForm" enctype="multipart/form-data">
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-secondary rounded h-100 p-4">
                             <h6 class="mb-4">Add product</h6>
@@ -544,6 +544,56 @@
     <script src="darkpan/lib/tempusdominus/js/moment.min.js"></script>
     <script src="darkpan/lib/tempusdominus/js/moment-timezone.min.js"></script>
     <script src="darkpan/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const productForm = document.getElementById('productForm');
+      
+        productForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+      
+          const formData = new FormData(productForm);
+      
+          try {
+            const response = await fetch('/product', {
+              method: 'POST',
+              body: formData
+            });
+      
+            const data = await response.json();
+      
+            if (data.success) {
+              await Swal.fire({
+                icon: 'success',
+                title: 'Product added successfully',
+                timer: 2000,
+                showConfirmButton: false
+              });
+      
+              // Perform any necessary actions after successful form submission
+            } else {
+              await Swal.fire({
+                icon: 'error',
+                title: 'Error adding product',
+                text: 'An error occurred while adding the product',
+                showConfirmButton: true
+              });
+      
+              // Handle error scenario
+            }
+          } catch (error) {
+            console.log('Error:', error);
+      
+            await Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'An error occurred while processing the request',
+              showConfirmButton: true
+            });
+      
+            // Handle fetch error
+          }
+        });
+      </script>
 
     <!-- Template Javascript -->
     <script src="darkpan/js/main.js"></script>
