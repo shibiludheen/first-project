@@ -582,7 +582,7 @@ isActiveTrue:async(req,res)=>{
     const imageUrl   =  encodeURIComponent(imageId)
     console.log(newImageFile)
     console.log(oldImagePath)
-    const newfilePath  = ` http://localhost:3000/image/products/${imageUrl}`
+    const newfilePath  = ` https://www.on-step.shop/image/products/${imageUrl}`
     fs.readFile(newImageFile.path, (err, data) => {
       if (err) {
         return res.status(500).send('Error occurred while reading the new image file.');
