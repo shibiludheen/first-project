@@ -259,7 +259,7 @@
                             </form>
                         </div>
                     </div> -->
-                    <form action="editProduct?q=<%=product._id%>" method="post" enctype="multipart/form-data">
+                    <form id="productForm" enctype="multipart/form-data">
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-secondary rounded h-100 p-4">
                             <h6 class="mb-4">Edit product</h6>
@@ -330,21 +330,23 @@
                                         <label for="formFile" class="form-label ">Add new images</label>
                                         <input class="form-control bg-dark btn btn-dark"   multiple type="file" name="images" id="formFile">
                                    </div>
-                                   <a href="showImageDetails?q=<%=product._id%>" class="btn btn-dark">Show images</a>
-                                   <a href="imageCropAdd?q=<%=product._id%>" class="btn btn-dark">Crop Image And add</a>
+                                   
                                  
                                 </div>
                             </div>
-                            <button type="submit"class="btn btn-dark">submit</button>
+                            <button type="submit"class="btn btn-dark">Add</button >
+                            <a href="showImageDetails?q=<%=product._id%>" class="btn btn-dark">Show images</a>
+                                   <a href="imageCropAdd?q=<%=product._id%>" class="btn btn-dark">Crop Image And add</a>
 
                         </div>
+                    </div>
                     </form>
 
 
                       
                        
                      
-                    </div>
+                    
                    
                    
                    
@@ -545,6 +547,55 @@
     <script src="darkpan/lib/tempusdominus/js/moment.min.js"></script>
     <script src="darkpan/lib/tempusdominus/js/moment-timezone.min.js"></script>
     <script src="darkpan/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+<script>
+  productForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const formData = new FormData(productForm);
+
+  try {
+    const response = await fetch(`editProduct?q=<%=product._id%>`, {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      const click = await Swal.fire({
+        icon: 'success',
+        title: 'Added',
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      // Perform any necessary actions after successful update
+    } else {
+        const click=await Swal.fire({
+                     icon: 'error',
+                     title: 'failed',
+                     text: ` not added`,
+                     timer: 2000,
+                     showConfirmButton: false
+                     // text: "your order placed please continue shoping"
+                   })
+      // Handle error scenario
+    }
+  } catch (error) {
+    const click=await Swal.fire({
+                     icon: 'error',
+                     title: 'failed',
+                     text: ` Something went srong`,
+                     timer: 2000,
+                     showConfirmButton: false
+                     // text: "your order placed please continue shoping"
+                   })
+    // Handle fetch error
+  }
+});
+  </script>
 
     <!-- Template Javascript -->
     <script src="darkpan/js/main.js"></script>
