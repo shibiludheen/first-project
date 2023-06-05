@@ -657,7 +657,7 @@ couponid=undefined
   orderDelete: async (req, res) => { 
   try{
     const  orderid = req.query.q;
-      const order =  await orderSchema.findOne({id:orderid}).populate('user')
+      const order =  await orderSchema.findOne({_id:orderid}).populate('user')
       const user  =  req.session.email
       const amount = order.totelAmount
       if(order.status=="paid"&&order.paymentOption=="COD"){
