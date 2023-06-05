@@ -630,7 +630,7 @@ isActiveTrue:async(req,res)=>{
      
 
   }catch(Err){
-
+   res.render('admin/errorPage')
   }
 },cropImagePage:async(req,res)=>{
   try{
